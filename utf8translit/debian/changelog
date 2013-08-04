@@ -1,0 +1,5 @@
+utf8translit (1.0.0) unstbable; urgency=low
+
+  * transliterate function for PostgreSQL using icu transliterator library
+
+ -- Sven Geggus <sven-deb@geggus.net>  Sun, 04 Aug 2013 14:47:30 +0200

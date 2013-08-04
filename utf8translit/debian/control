@@ -1,0 +1,18 @@
+Source: utf8translit
+Section: misc
+Priority: extra
+Maintainer: Sven Geggus <sven-deb@geggus.net>
+Build-Depends: debhelper (>= 8.0.0), libicu-dev
+Standards-Version: 3.9.2
+
+Package: utf8translit
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.2
+Description: stored procedure transliterate for PostgreSQL using icu transliterator library
+ Using this library one will be able to issue queries like the following
+ |                                                               
+ |mydb=>  select transliterate('Москва́');
+ | transliterate
+ |---------------
+ | Moskvá
+ |(1 row)
