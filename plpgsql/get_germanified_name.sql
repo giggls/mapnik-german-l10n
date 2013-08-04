@@ -36,7 +36,18 @@ CREATE or REPLACE FUNCTION get_germanified_name(name text, name_de text, int_nam
     IF (name_de is NULL) THEN
       IF (int_name is NULL) THEN
 	IF (name_en is NULL) THEN
+          if (name is NULL) THEN
+            return NULL;
+          END IF;
+          if (name = '') THEN
+            return '';
+          END IF;
 	  /* if transliteration is available add here with a latin1 check */
+          IF is_latin(name) THEN
+            return name;
+          ELSE
+            return transliterate(name);
+          END IF;
 	  return name;
 	ELSE
 	  IF (name_en != name) THEN
