@@ -29,7 +29,7 @@ PG_FUNCTION_INFO_V1(transliterate);
 
 Datum transliterate(PG_FUNCTION_ARGS) {
   Transliterator *latin_tl;
-  UErrorCode tlstatus = U_ZERO_ERROR;
+  UErrorCode status = U_ZERO_ERROR;
   char *inbuf,*outbuf;
   
   if (GetDatabaseEncoding() != PG_UTF8) {
@@ -44,28 +44,31 @@ Datum transliterate(PG_FUNCTION_ARGS) {
   inbuf[VARSIZE(t) - VARHDRSZ]='\0';
    
   UnicodeString ustr(inbuf);
-   
-  latin_tl = Transliterator::createInstance("Any-Latin", UTRANS_FORWARD, tlstatus);
+  latin_tl = Transliterator::createInstance("Any-Latin", UTRANS_FORWARD, status);
   if (latin_tl == 0) {
     ereport(ERROR,(errcode(ERRCODE_SYSTEM_ERROR),
     errmsg("ERROR: Transliterator::createInstance() failed")));
     PG_RETURN_TEXT_P("");
   }
   latin_tl->transliterate(ustr);
-
-  int32_t len = ustr.length();
-  int32_t bufLen = len + 16;
-  int32_t actualLen;
-  outbuf=(char *) malloc((bufLen +1)*sizeof(char));
   
-  actualLen = ustr.extract(0, len, outbuf);
-  outbuf[actualLen] = '\0';
-   
-  text *new_text = (text *) palloc(VARHDRSZ + actualLen);
-  SET_VARSIZE(new_text, VARHDRSZ + actualLen);   
+  
+  int32_t bufLen = 100;
+  outbuf = (char *) malloc((bufLen + 1)*sizeof(char));
+  status=U_ZERO_ERROR;
+  bufLen = ustr.extract(outbuf,bufLen,NULL,status);
+  if (status == U_BUFFER_OVERFLOW_ERROR) {
+    status=U_ZERO_ERROR;
+    outbuf = (char *) realloc(outbuf, bufLen + 1);
+    bufLen = ustr.extract(outbuf,bufLen,NULL,status);
+  }
+  outbuf[bufLen] = '\0'; 
+  
+  text *new_text = (text *) palloc(VARHDRSZ + bufLen);
+  SET_VARSIZE(new_text, VARHDRSZ + bufLen);
   memcpy((void *) VARDATA(new_text), /* destination */
-         (void *) outbuf,actualLen);
-
+         (void *) outbuf,bufLen);
+  
   free(inbuf);
   free(outbuf);
   delete latin_tl;       
