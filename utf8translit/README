@@ -5,7 +5,7 @@ http://www.icu-project.org/apiref/icu4c/classicu_1_1Transliterator.html
 
 We currently use this code for localisation of the German Mapnik
 style. Transliteration is the last resort if no latin name:de, int_name
-or name:en has been found by the get_germanified_name PL/pgSQL
+or name:en has been found by the get_localized_name PL/pgSQL
 function.
 
 To enable the tranliterate function in your database execute the
