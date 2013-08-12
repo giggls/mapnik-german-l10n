@@ -6,12 +6,12 @@ http://wiki.openstreetmap.org/wiki/German_Style
 
 Get the name tag which is the most appropriate one for a german map
 
-This can be easily adapted to any other european language by just replacing "de"
-with your favourite language code.
+This can be used for any language using latin script.
 
 usage examples:
-select get_germanified_name('Köln',NULL,NULL,'Cologne') as name;
-select get_germanified_name('เชียงใหม่',NULL,'Chiang Mai',NULL) as name;
+select get_localized_name('Köln',NULL,NULL,'Cologne') as name;
+select get_localized_name('เชียงใหม่',NULL,'Chiang Mai',NULL) as name;
+select get_localized_name('Москва́',NULL,NULL,NULL) as name;
 
 (c) 2013 Sven Geggus <svn-osm@geggus.net> public domain
 
@@ -31,9 +31,9 @@ CREATE or REPLACE FUNCTION is_latin(text) RETURNS BOOLEAN AS $$
   END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE or REPLACE FUNCTION get_germanified_name(name text, name_de text, int_name text, name_en text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION get_localized_name(name text, local_name text, int_name text, name_en text) RETURNS TEXT AS $$
   BEGIN
-    IF (name_de is NULL) THEN
+    IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
 	IF (name_en is NULL) THEN
           if (name is NULL) THEN
@@ -72,7 +72,7 @@ CREATE or REPLACE FUNCTION get_germanified_name(name text, name_de text, int_nam
 	END IF;
       END IF;
     ELSE
-      return name_de;
+      return local_name;
     END IF;
   END;
 $$ LANGUAGE 'plpgsql';
