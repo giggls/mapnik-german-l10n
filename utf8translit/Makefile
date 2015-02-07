@@ -13,7 +13,7 @@ OBJ = utf8translit.o
 	$(CXX) $(CFLAGS) -c $<
 
 utf8translit.so: utf8translit.o
-	$(CXX) $(LIBS) -shared -o $@ $<
+	$(CXX) -shared -o $@ $< $(LIBS)
 
 install: utf8translit.so
 	install -D -m 644 utf8translit.so $(TMPTARGET)$(shell pg_config --pkglibdir)/utf8translit.so

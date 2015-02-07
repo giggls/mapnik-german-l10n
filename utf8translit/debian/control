@@ -7,7 +7,7 @@ Standards-Version: 3.9.2
 
 Package: utf8translit
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.2
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.4
 Description: stored procedure transliterate for PostgreSQL using icu transliterator library
  Using this library one will be able to issue queries like the following
  |                                                               
