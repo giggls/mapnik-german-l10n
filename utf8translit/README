@@ -1,0 +1,22 @@
+utf8trans is a simple Any to Latin transliteration glue code
+function for postgresql using icu transliterator:
+
+http://www.icu-project.org/apiref/icu4c/classicu_1_1Transliterator.html
+
+We currently use this code for localisation of the German Mapnik
+style. Transliteration is the last resort if no latin name:de, int_name
+or name:en has been found by the get_localized_name PL/pgSQL
+function.
+
+To enable the tranliterate function in your database execute the
+following code as database root user:
+
+CREATE FUNCTION transliterate(text) RETURNS text AS '$libdir/utf8translit', 'transliterate' LANGUAGE C STRICT;
+
+Afterwards the function can then be used like this:
+
+mydb=>  select transliterate('Москва́');
+ transliterate
+---------------
+ Moskvá
+(1 row)

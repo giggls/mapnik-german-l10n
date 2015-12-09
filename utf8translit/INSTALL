@@ -1,0 +1,5 @@
+On Debian and Ubuntu GNU/Linux it is recomended to build and
+install a package calling "dpkg-buildpackage".
+
+On other distributions it should be possible to just call make
+install, if the development package of libicu has been installed.

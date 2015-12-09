@@ -1,0 +1,11 @@
+utf8translit (1.0.1) unstable; urgency=low
+
+  * bugfix release
+
+ -- Sven Geggus <sven-deb@geggus.net>  Mon, 05 Aug 2013 14:13:56 +0200
+
+utf8translit (1.0.0) unstable; urgency=low
+
+  * transliterate function for PostgreSQL using icu transliterator library
+
+ -- Sven Geggus <sven-deb@geggus.net>  Sun, 04 Aug 2013 14:47:30 +0200
