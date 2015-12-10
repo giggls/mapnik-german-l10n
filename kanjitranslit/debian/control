@@ -1,0 +1,18 @@
+Source: kanjitranslit
+Section: misc
+Priority: extra
+Maintainer: Sven Geggus <sven-osm@geggus.net>
+Build-Depends: debhelper (>= 8.0.0), libkakasi2-dev, postgresql-server-dev-9.4
+Standards-Version: 3.9.2
+
+Package: postgresql-9.4-kanjitranslit
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.4
+Description: stored procedure transliterate for PostgreSQL using icu transliterator library
+ Using this library one will be able to issue queries like the following
+ |                                                               
+ |mydb=>  select kanji_transliterate('漢字');
+ | transliterate
+ |---------------
+ | kanji
+ |(1 row)

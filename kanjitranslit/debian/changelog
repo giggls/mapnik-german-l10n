@@ -1,0 +1,5 @@
+kanjitranslit (1.0.0) unstable; urgency=low
+
+  * kanji_transliterate function for PostgreSQL using kakasi library
+
+ -- Sven Geggus <sven-osm@geggus.net>  Wed, 09 Dec 2015 17:30:05 +0100
