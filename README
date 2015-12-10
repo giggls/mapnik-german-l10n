@@ -5,22 +5,13 @@ own repository.
 
 We currently use this code in the German Mapnik style.
 
-Transliteration is the last resort if no latin name:de, int_name or name:en
-has been found by the get_localized_name PL/pgSQL function.
+Currently this conde consists of three parts:
 
-To enable the tranliterate function in your database execute the following
-code as database root user:
+1. An "Any-Latin" transliterate funtion using libicu
+2. A japanese kanji transliterate funtion using libkakasi
+3. A couple of PL/pgSQL functions which can be used to generate labels for
+   map rendering.
 
-CREATE FUNCTION transliterate(text) RETURNS text AS '$libdir/utf8translit', 'transliterate' LANGUAGE C STRICT;
+See INSTALL file for installation instructions
 
-Afterwards the function can then be used like this:
-
-mydb=>  select transliterate('Москва́');
- transliterate
----------------
- Moskvá
-(1 row)
-
-Afterwards the plpgsql funktions can be enabled using something like this:
-
- for sql in plpgsql/*; do echo psql -f $sql yourdb; done
+For SQL usage examples have a look at plpgsql/get_localized_name.sql

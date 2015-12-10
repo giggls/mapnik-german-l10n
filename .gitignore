@@ -1,2 +1,6 @@
 *.o
 *.so
+*.dsc
+*.tar.gz
+*_*.changes
+*.deb
