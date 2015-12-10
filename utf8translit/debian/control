@@ -5,7 +5,7 @@ Maintainer: Sven Geggus <sven-deb@geggus.net>
 Build-Depends: debhelper (>= 8.0.0), libicu-dev, postgresql-server-dev-9.4
 Standards-Version: 3.9.2
 
-Package: utf8translit
+Package: postgresql-9.4-utf8translit
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.4
 Description: stored procedure transliterate for PostgreSQL using icu transliterator library
