@@ -30,5 +30,4 @@ CREATE or REPLACE FUNCTION get_country(feature geometry) RETURNS TEXT AS $$
    where st_contains(geometry, st_centroid(st_transform(feature,4326)));
    return country;
  END;
-$$ LANGUAGE 'plpgsql';
-  
+$$ LANGUAGE 'plpgsql' STABLE;

@@ -41,4 +41,4 @@ CREATE or REPLACE FUNCTION geo_transliterate(name text, place geometry DEFAULT N
       return country;
     END IF;
   END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STABLE;

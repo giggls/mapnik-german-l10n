@@ -69,7 +69,7 @@ CREATE or REPLACE FUNCTION is_latin(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 /* helper function "is_latinorgreek" checks if string consists of latin, greek or cyrillic characters only */
@@ -84,7 +84,7 @@ CREATE or REPLACE FUNCTION is_latinorgreek(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* helper function "contains_cjk" checks if string contains CJK characters
 0x4e00-0x9FFF in unicode table
@@ -102,7 +102,7 @@ CREATE or REPLACE FUNCTION contains_cjk(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* helper function "street_abbreviation" replaces some common parts of german street names */
 /* with their abbr, if length(name) is over 16                                      */
@@ -146,7 +146,7 @@ CREATE or REPLACE FUNCTION street_abbreviation(text) RETURNS TEXT AS $$
   END IF;
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 
@@ -218,7 +218,7 @@ CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, i
       END IF;
     END IF;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
 
 
@@ -290,7 +290,7 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
       END IF;
     END IF;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
 
 CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
@@ -337,7 +337,7 @@ CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_
       return local_name;
     END IF;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
 
 
@@ -365,5 +365,5 @@ CREATE or REPLACE FUNCTION get_latin_name(name text, local_name text, int_name t
    END IF;
   END IF;
  END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
