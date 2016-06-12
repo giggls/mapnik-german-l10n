@@ -12,6 +12,7 @@ CREATE or REPLACE FUNCTION geo_transliterate(name text, place geometry DEFAULT N
   DECLARE
     country text;
   BEGIN
+    RAISE LOG 'going to transliterate %', name;
     IF (place IS NULL) THEN
       return transliterate(name);
     ELSE
@@ -30,6 +31,7 @@ CREATE or REPLACE FUNCTION geo_transliterate(name text, place geometry DEFAULT N
              not on hiragana and katakana
           */
           if contains_cjk(name) THEN
+            RAISE LOG 'calling kanji_transliterate';
             return kanji_transliterate(name);
           ELSE
             return transliterate(name);

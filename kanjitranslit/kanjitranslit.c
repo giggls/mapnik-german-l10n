@@ -17,6 +17,7 @@ Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 #include <mb/pg_wchar.h>
 #include <fmgr.h>
 #include <iconv.h>
+#include <utf8proc.h>
 
 #ifdef PG_MODULE_MAGIC
 PG_MODULE_MAGIC;
@@ -35,6 +36,7 @@ static int utf8_strlen(char *s) {
 
 Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   char *inbuf;
+  char *normalized;
   char *kakasi_out;
   char *kakasi_argv[6]={"kakasi","-Ja","-Ha","-Ka","-Ea","-s"};
   
@@ -50,34 +52,45 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   memcpy(inbuf, (void *) VARDATA(t), VARSIZE(t) - VARHDRSZ);
   inbuf[VARSIZE(t) - VARHDRSZ]='\0';
   
-  // 1. convert encoding to euc-jp to make it usable for kakasi
+  // 1. Use Normalization Form KC to avoid Enclosed CJK Letters like
+  // https://en.wikipedia.org/wiki/Enclosed_CJK_Letters_and_Months
+  normalized=utf8proc_NFKC(inbuf);
+  if (NULL == normalized) {
+    ereport(ERROR, (errmsg("error calling utf8proc_NFKC")));
+    free(inbuf);
+    PG_RETURN_TEXT_P("");
+  }
+  free(inbuf);
+  
+  // 2. convert encoding to euc-jp to make it usable for kakasi
   
   // create transcoder from utf8 to EUC-JP
   iconv_t euc2utf = iconv_open("EUC-JP", "UTF-8");
   if(euc2utf == (iconv_t) -1) {
       ereport(ERROR, (errmsg("iconv Initialization failure")));
+      PG_RETURN_TEXT_P("");
   }
    
   // len of utf 
-  size_t ibl = strlen(inbuf)+1;
+  size_t ibl = strlen(normalized)+1;
   // len of eucjp is maximum 3 bytes per char
-  size_t obl =  utf8_strlen(inbuf)*3+1;
+  size_t obl =  utf8_strlen(normalized)*3+1;
          
   char *converted = calloc(obl, sizeof(char));
   char *converted_start = converted;
-  char *inbuf_start = inbuf;
+  char *normalized_start = normalized;
   
-  int ret = iconv(euc2utf,&inbuf,&ibl, &converted, &obl);
+  int ret = iconv(euc2utf,&normalized,&ibl, &converted, &obl);
   if(ret == (size_t) -1) {
-    ereport(ERROR, (errmsg("string conversion of to EUC-JP (iconv) failed")));
+    ereport(ERROR, (errmsg("string conversion to EUC-JP (iconv) failed for string: %s",normalized)));
     iconv_close(euc2utf);
     PG_RETURN_TEXT_P("");
   }
   
   iconv_close(euc2utf);
-  free(inbuf_start);
+  free(normalized_start);
   
-  // 2. run kakasi transliteration
+  // 3. run kakasi transliteration
   
   // run kakasi on eucjp string
   kakasi_getopt_argv(6,kakasi_argv);
@@ -88,7 +101,7 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
     PG_RETURN_TEXT_P("");
   }
   
-  // 3. write kakasi output to psql buffer        
+  // 4. write kakasi output to psql buffer        
   int32_t obufLen = strlen(kakasi_out);
   
   text *new_text = (text *) palloc(VARHDRSZ + obufLen);

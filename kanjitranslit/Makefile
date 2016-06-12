@@ -3,7 +3,7 @@ PGPATH=$(shell pg_config --includedir-server)
 
 CFLAGS=-fpic -fno-exceptions -I$(PGPATH)
 
-LIBS=-lkakasi
+LIBS=-lkakasi -lutf8proc
 
 all: kanjitranslit.so
 

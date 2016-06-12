@@ -2,7 +2,7 @@ Source: kanjitranslit
 Section: misc
 Priority: extra
 Maintainer: Sven Geggus <sven-osm@geggus.net>
-Build-Depends: debhelper (>= 8.0.0), libkakasi2-dev, postgresql-server-dev-9.4
+Build-Depends: debhelper (>= 8.0.0), libkakasi2-dev, postgresql-server-dev-9.4, libutf8proc-dev
 Standards-Version: 3.9.2
 
 Package: postgresql-9.4-kanjitranslit

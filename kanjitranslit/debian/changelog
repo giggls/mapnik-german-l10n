@@ -1,3 +1,10 @@
+kanjitranslit (1.0.1) unstable; urgency=medium
+
+  * convert UTF-8 to normalization form KC to avoid Enclosed CJK Letters
+    which are not available in euc-jp
+
+ -- Sven Geggus <sven-debian@geggus.net>  Sun, 12 Jun 2016 18:26:04 +0200
+
 kanjitranslit (1.0.0) unstable; urgency=low
 
   * kanji_transliterate function for PostgreSQL using kakasi library
