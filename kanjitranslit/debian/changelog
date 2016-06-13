@@ -1,3 +1,9 @@
+kanjitranslit (1.0.2) unstable; urgency=medium
+
+  * ignore characters which can not be converted to euc-jp
+
+ -- Sven Geggus <sven-deb@geggus.net>  Mon, 13 Jun 2016 14:58:46 +0200
+
 kanjitranslit (1.0.1) unstable; urgency=medium
 
   * convert UTF-8 to normalization form KC to avoid Enclosed CJK Letters

@@ -165,7 +165,12 @@ CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, i
           IF is_latin(name) THEN
             return name;
           ELSE
-            return geo_transliterate(name,place); 
+            /* return geo_transliterate(name,place); */
+            IF ( loc_in_brackets ) THEN
+              return name||' ('||geo_transliterate(name,place)||')';
+            ELSE
+              return geo_transliterate(name,place)||' ('||name||')';
+            END IF;
           END IF;
 	  return name;
 	ELSE
@@ -202,17 +207,9 @@ CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, i
          END IF;
         ELSE
          IF ( loc_in_brackets ) THEN
-          IF ( is_latinorgreek(name)=false ) THEN
-           return local_name;
-          ELSE
            return name||' ('||local_name||')';
-          END IF;
          ELSE
-          IF ( is_latinorgreek(name)=false ) THEN
-           return local_name;
-          ELSE
            return local_name||' ('||name||')';
-          END IF;
          END IF;
         END IF;
       END IF;
@@ -237,7 +234,11 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
           IF is_latin(name) THEN
             return street_abbreviation(name);
           ELSE
-            return geo_transliterate(name,place); 
+            IF ( loc_in_brackets ) THEN
+              return name||' ('||geo_transliterate(name,place)||')';
+            ELSE
+              return geo_transliterate(name,place)||' ('||name||')';
+            END IF;
           END IF;
 	  return name;
 	ELSE
@@ -274,17 +275,9 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
          END IF;
         ELSE
          IF ( loc_in_brackets ) THEN
-          IF ( is_latinorgreek(name)=false ) THEN
-           return street_abbreviation(local_name);
-          ELSE
            return street_abbreviation(name||' ('||local_name||')');
-          END IF;
          ELSE
-          IF ( is_latinorgreek(name)=false ) THEN
-           return street_abbreviation(local_name);
-          ELSE
            return street_abbreviation(local_name||' ('||name||')');
-          END IF;
          END IF;
         END IF;
       END IF;
