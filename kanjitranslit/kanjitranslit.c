@@ -46,7 +46,7 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   if (GetDatabaseEncoding() != PG_UTF8) {
     ereport(ERROR,(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
     errmsg("requires UTF8 database encoding")));
-    PG_RETURN_TEXT_P("");
+    PG_RETURN_NULL();
   }
    
   text *t = PG_GETARG_TEXT_P(0);
@@ -63,7 +63,7 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   if (NULL == normalized) {
     ereport(ERROR, (errmsg("error calling utf8proc_NFKC")));
     free(inbuf);
-    PG_RETURN_TEXT_P("");
+    PG_RETURN_NULL();
   }
   free(inbuf);
   
@@ -84,7 +84,7 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   iconv_t wc2euc = iconv_open("EUC-JP", "WCHAR_T");
   if(wc2euc == (iconv_t) -1) {
       ereport(ERROR, (errmsg("iconv Initialization failure")));
-      PG_RETURN_TEXT_P("");
+      PG_RETURN_NULL();
   }
    
   // len of wchar
@@ -125,7 +125,7 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   // EUC-JP string is empty
   if (strlen(converted_start)==0) {
     free(converted_start);
-    PG_RETURN_TEXT_P("");
+    PG_RETURN_NULL();
   }
   
   // 4. run kakasi transliteration
@@ -136,7 +136,7 @@ Datum kanji_transliterate(PG_FUNCTION_ARGS) {
   free(converted_start);
   if (kakasi_out==NULL) {
     ereport(ERROR, (errmsg("kakasi_do failed")));
-    PG_RETURN_TEXT_P("");
+    PG_RETURN_NULL();
   }
   
   // 5. write kakasi output to psql buffer        
