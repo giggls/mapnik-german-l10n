@@ -1,3 +1,10 @@
+AGPL scope of application:
+
+Using this code unchanged inside your map style (even a proprietary one) or
+PostgreSQL Server for whatever purpose will not trigger any viral aspect of
+the AGPL.  The AGPL is only relevant for changes and improvements to the
+code provided in this repository.
+
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
 
