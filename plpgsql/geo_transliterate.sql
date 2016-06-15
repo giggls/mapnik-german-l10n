@@ -4,7 +4,9 @@
    a geolocation aware transliteration function if no koordinates are given
    fall back to generic transliteration 
 
-   (c) 2015-2016 Sven Geggus <svn-osm@geggus.net>   
+   (c) 2015-2016 Sven Geggus <svn-osm@geggus.net>
+   
+   Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
    
 */
 

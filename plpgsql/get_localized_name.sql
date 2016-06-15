@@ -53,7 +53,10 @@ select get_localized_streetname('Dr. No Street','Professor-Doktor-No-Straße',NU
 select get_localized_name_without_brackets('Dr. No Street','Doktor-No-Straße',NULL,NULL) as name;
        --> "Doktor-No-Straße"       
 
-(c) 2014-2016 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de> public domain
+(c) 2014-2016 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de>
+
+Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
+
 */
 
 
