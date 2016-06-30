@@ -122,9 +122,58 @@ CREATE or REPLACE FUNCTION street_abbreviation(longname text, langcode text) RET
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
+   helper function "street_abbreviation_all"
+   call all street_abbreviation functions
+   These are currently russian, english and german
+   
+*/
+CREATE or REPLACE FUNCTION street_abbreviation_all(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=street_abbreviation_de(longname);
+  abbrev=street_abbreviation_en(abbrev);
+  abbrev=street_abbreviation_ru(abbrev);
+  return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "street_abbreviation_all_latin"
+   call all latin street_abbreviation functions
+   These are currently: english and german
+   
+*/
+CREATE or REPLACE FUNCTION street_abbreviation_all_latin(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=street_abbreviation_de(longname);
+  abbrev=street_abbreviation_en(abbrev);
+  return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "street_abbreviation_non_latin"
+   call all non latin street_abbreviation functions
+   These are currently: russian
+   
+*/
+CREATE or REPLACE FUNCTION street_abbreviation_non_latin(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=street_abbreviation_ru(longname);
+  return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+
+
+/* 
    helper function "street_abbreviation_de"
-   replaces some common parts of german street names with their abbr,
-   if length(name) is over 16
+   replaces some common parts of german street names with their abbr
 */
 CREATE or REPLACE FUNCTION street_abbreviation_de(longname text) RETURNS TEXT AS $$
  DECLARE
@@ -167,8 +216,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "street_abbreviation_en"
-   replaces some common parts of english street names with their abbr,
-   if length(name) is over 16
+   replaces some common parts of english street names with their abbr
    Most common abbreviations extracted from:
    http://www.ponderweasel.com/whats-the-difference-between-an-ave-rd-st-ln-dr-way-pl-blvd-etc/
 */
@@ -187,6 +235,16 @@ CREATE or REPLACE FUNCTION street_abbreviation_en(longname text) RETURNS TEXT AS
   abbrev=regexp_replace(abbrev,'Square\M','Sq.');
   abbrev=regexp_replace(abbrev,'Crescent\M','Cres.');
   return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "street_abbreviation_ru"
+   replaces улица (ulica) with ул. (ul.)
+*/
+CREATE or REPLACE FUNCTION street_abbreviation_ru(longname text) RETURNS TEXT AS $$
+ BEGIN
+  return regexp_replace(longname,'улица','ул.');
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
@@ -252,6 +310,8 @@ $$ LANGUAGE 'plpgsql' STABLE;
 
 
 CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, langcode text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
+  DECLARE
+    abbrevname text;
   BEGIN
     IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
@@ -263,29 +323,30 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
             return '';
           END IF;
           /*
-            This might be a target language name thus we call the street_abbreviation function
-            as it seems to be way to expensive to check if the given node is inside
+            This might be a target language name thus we call all latin street_abbreviation
+            functions as it seems to be way too expensive to check if the given node is inside
             the country using the target language.
           */
           IF is_latin(name) THEN
-            return street_abbreviation(name,langcode);
+            abbrevname=street_abbreviation_all_latin(name);
+            return abbrevname;            
           ELSE /* called if name is not latin and transliteration is needed */
-            return gen_bracketed_name(geo_transliterate(name,place),name,loc_in_brackets);
+            abbrevname=street_abbreviation_non_latin(name);
+            return gen_bracketed_name(geo_transliterate(abbrevname,place),abbrevname,loc_in_brackets);
           END IF;
           /*
             int_name is likely and name_en is certainly english
-            thus run street_abbreviation_en on both
+            thus only run street_abbreviation_en on both
           */
 	ELSE /* called if name_en != NULL */
-	  return gen_bracketed_name(street_abbreviation_en(name_en),name,loc_in_brackets);
+	  return gen_bracketed_name(street_abbreviation_en(name_en),street_abbreviation_all(name),loc_in_brackets);
 	END IF;        
       ELSE /* called if int_name != NULL */
-       return gen_bracketed_name(street_abbreviation(int_name),name,loc_in_brackets);
+       return gen_bracketed_name(street_abbreviation_en(int_name),street_abbreviation_all(name),loc_in_brackets);
       END IF;
     ELSE /* called if local_name != NULL */
-     return gen_bracketed_name(street_abbreviation(local_name,langcode),name,loc_in_brackets);
-    END IF;
-  
+     return gen_bracketed_name(street_abbreviation(local_name,langcode),street_abbreviation_all(name),loc_in_brackets);
+    END IF;  
   END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
