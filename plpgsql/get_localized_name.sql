@@ -131,9 +131,6 @@ CREATE or REPLACE FUNCTION street_abbreviation_de(longname text) RETURNS TEXT AS
   abbrev text;
  BEGIN
   abbrev=longname;
-  IF (length(abbrev)<16) THEN
-   return abbrev;
-  END IF;
   IF (position('traße' in abbrev)>0) THEN
    abbrev=regexp_replace(abbrev,'Straße\M','Str.');
    abbrev=regexp_replace(abbrev,'straße\M','str.');
@@ -180,18 +177,15 @@ CREATE or REPLACE FUNCTION street_abbreviation_en(longname text) RETURNS TEXT AS
   abbrev text;
  BEGIN
   abbrev=longname;
-  IF (length(abbrev)<16) THEN
-   return abbrev;
-  END IF;
-   abbrev=regexp_replace(abbrev,'Boulevard\M','Blvd.');
-   abbrev=regexp_replace(abbrev,'Drive\M','Dr.');
-   abbrev=regexp_replace(abbrev,'Avenue\M','Ave.');
-   abbrev=regexp_replace(abbrev,'Street\M','St.');
-   abbrev=regexp_replace(abbrev,'Road\M','Rd.');
-   abbrev=regexp_replace(abbrev,'Lane\M','Ln.');
-   abbrev=regexp_replace(abbrev,'Place\M','Pl.');
-   abbrev=regexp_replace(abbrev,'Square\M','Sq.');
-   abbrev=regexp_replace(abbrev,'Crescent\M','Cres.');
+  abbrev=regexp_replace(abbrev,'Boulevard\M','Blvd.');
+  abbrev=regexp_replace(abbrev,'Drive\M','Dr.');
+  abbrev=regexp_replace(abbrev,'Avenue\M','Ave.');
+  abbrev=regexp_replace(abbrev,'Street\M','St.');
+  abbrev=regexp_replace(abbrev,'Road\M','Rd.');
+  abbrev=regexp_replace(abbrev,'Lane\M','Ln.');
+  abbrev=regexp_replace(abbrev,'Place\M','Pl.');
+  abbrev=regexp_replace(abbrev,'Square\M','Sq.');
+  abbrev=regexp_replace(abbrev,'Crescent\M','Cres.');
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
