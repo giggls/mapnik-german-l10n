@@ -66,7 +66,14 @@ yourdb=# select kanji_transliterate('漢字');
  (1 row)
 ```
 
-### 3. Enable the PL/pgSQL stored procedures
+### 3. Add table country_osm_grid from nominatim repository
+
+```
+wget https://github.com/twain47/Nominatim/raw/master/data/country_osm_grid.sql
+psql -f country_osm_grid.sql yourdb
+```
+
+### 4. Enable the PL/pgSQL stored procedures
 
 To do this all sql files from plpgsql diectory have to be applied to your
 database:
