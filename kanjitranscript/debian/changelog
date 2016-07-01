@@ -1,3 +1,10 @@
+kanjitranslit (1.99.0) unstable; urgency=medium
+
+  * Change function names to unique prefix osml10n_
+  * 2.0 will hopefully use CREATE EXTENSION
+
+ -- Sven Geggus <sven-deb@geggus.net>  Fri, 01 Jul 2016 13:46:38 +0200
+
 kanjitranslit (1.0.2) unstable; urgency=medium
 
   * ignore characters which can not be converted to euc-jp

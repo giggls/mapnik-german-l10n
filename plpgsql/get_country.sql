@@ -1,6 +1,6 @@
 /*
 
-get_country function
+osml10n_get_country function
 
 determine which country the centroid of a geometry object is located
 
@@ -13,7 +13,7 @@ https://github.com/twain47/Nominatim/blob/master/data/country_osm_grid.sql
 
 example call:
 
-yourdb=# select get_country(ST_GeomFromText('POINT(9 49)', 4326));
+yourdb=# select osml10n_get_country(ST_GeomFromText('POINT(9 49)', 4326));
  get_country 
  -------------
   de
@@ -21,7 +21,7 @@ yourdb=# select get_country(ST_GeomFromText('POINT(9 49)', 4326));
   
 */
 
-CREATE or REPLACE FUNCTION get_country(feature geometry) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_country(feature geometry) RETURNS TEXT AS $$
  DECLARE
   country text;
  BEGIN

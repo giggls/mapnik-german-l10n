@@ -1,8 +1,8 @@
 /*
  
 Load using the following command:
-CREATE FUNCTION kanji_transliterate(text) RETURNS text
-AS '/path/to/kanjitranslit.so', 'kanji_transliterate' LANGUAGE C STRICT;
+CREATE FUNCTION osml10n_kanji_transcript(text) RETURNS text
+AS '/path/to/osml10n_kanjitranscript.so', 'osml10n_kanji_transcript' LANGUAGE C STRICT;
 
 (c) 2015 Sven Geggus <sven-osm@geggus.net>
 
@@ -23,7 +23,7 @@ Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 PG_MODULE_MAGIC;
 #endif
 
-PG_FUNCTION_INFO_V1(kanji_transliterate);
+PG_FUNCTION_INFO_V1(osml10n_kanji_transcript);
 
 static int utf8_strlen(char *s) {
   int i = 0, j = 0;
@@ -34,7 +34,7 @@ static int utf8_strlen(char *s) {
   return j;
 }
 
-Datum kanji_transliterate(PG_FUNCTION_ARGS) {
+Datum osml10n_kanji_transcript(PG_FUNCTION_ARGS) {
   char *inbuf;
   char *normalized;
   wchar_t *normalized_wc;

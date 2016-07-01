@@ -23,7 +23,7 @@ The easiest way to to this on Debian/Ubuntu is to build packages and install
 them:
 
 ```sh
-for p in *translit; do pushd $p; dpkg-buildpackage -b ; popd; done
+make deb
 ```
 
 To make this work you will need to install the required libraries:
@@ -37,30 +37,30 @@ On other Distributions use `make/make install`.
 On a psql shell issue the following command (will need superuser privileges):
 
 ```sql
-CREATE or REPLACE FUNCTION kanji_transliterate(text)
-RETURNS text AS '$libdir/kanjitranslit.so', 'kanji_transliterate'
+CREATE FUNCTION osml10n_kanji_transcript(text)
+RETURNS text AS '$libdir/osml10n_kanjitranscript.so', 'osml10n_kanji_transcript'
 LANGUAGE C STRICT;
 ```
 
 ```sql
-CREATE or REPLACE FUNCTION transliterate(text)
-RETURNS text AS '$libdir/utf8translit.so', 'transliterate'
+CREATE FUNCTION osml10n_translit(text)
+RETURNS text AS '$libdir/osml10n_translit.so', 'osml10n_translit'
 LANGUAGE C STRICT;
 ```
 
 Afterwards you should be able to do the following:
 
 ```sql
-yourdb=# select transliterate('北京');
- transliterate 
+yourdb=# select osml10n_translit('北京');
+ osml10n_translit
 ---------------
  běi jīng
  (1 row)
 ```
 
 ```sql
-yourdb=# select kanji_transliterate('漢字');
- kanji_transliterate 
+yourdb=# select osml10n_kanji_transcript('漢字');
+ osml10n_kanji_transcript
 ---------------------
  kanji
  (1 row)
@@ -80,6 +80,3 @@ database:
 ```
 pushd plpgsql; for sql in *.sql; do psql -f $sql yourdb; done; popd
 ```
-
-
-

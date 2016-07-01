@@ -11,32 +11,36 @@ However, this can be used for any target language using latin script!
 
 This code will also need get_country.sql and geo_transliterate.sql to work properly
 
-get_localized_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry):
+osml10n_get_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry):
 Will try its best to return a usable name pair with name in brackets (or vise versa if loc_in_brackets is set)
 
-get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry)
+osml10n_get_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry)
  same as get_localized_placename, but with some common abbreviations 
  for german street names (Straße->Str.), if name ist longer than 15 characters
 
-get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry)
+osml10n_get_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry)
  same as get_localized_placename, but with no names in brackets
  
 usage examples:
 
-select get_localized_placename('Москва́','Moskau',NULL,'Moscow',true) as name;
+select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',true) as name;
        ---> "Москва́ (Moskau)"
-select get_localized_placename('Москва́','Moskau',NULL,'Moscow',false) as name;
+select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',false) as name;
        -->  "Moskau (Москва́́́́́́́́́́)"
-select get_localized_placename('القاهرة','Kairo','Cairo','Cairo',false) as name;
+select osml10n_get_placename('القاهرة','Kairo','Cairo','Cairo',false) as name;
        --> "Kairo"
-select get_localized_placename('Brixen Bressanone','Brixen',NULL,NULL,false) as name;
+select osml10n_get_placename('Brixen Bressanone','Brixen',NULL,NULL,false) as name;
        --> "Brixen"
-select get_localized_streetname('Doktor-No-Straße',NULL,NULL,NULL,false) as name;
+select osml10n_get_streetname('Doktor-No-Straße',NULL,NULL,NULL,false) as name;
        --> "Dr.-No-Str."
-select get_localized_streetname('Dr. No Street','Professor-Doktor-No-Straße',NULL,NULL,false) as name;
+select osml10n_get_streetname('Dr. No Street','Professor-Doktor-No-Straße',NULL,NULL,false) as name;
        --> "Prof.-Dr.-No-Str. (Dr. No Street)"
-select get_localized_name_without_brackets('Dr. No Street','Doktor-No-Straße',NULL,NULL) as name;
+select osml10n_get_name_without_brackets('Dr. No Street','Doktor-No-Straße',NULL,NULL) as name;
        --> "Doktor-No-Straße"       
+select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,'Vozdvizhenka Street',true,'de');
+       --> "ул. Воздвиженка (Vozdvizhenka St.)"
+select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,NULL,true,'de');
+       --> "ул. Воздвиженка (ul. Vozdviženka)"
 
 (c) 2014-2016 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de>
 
@@ -49,7 +53,7 @@ Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
    helper function "is_latin"
    checks if string consists of latin characters only
 */
-CREATE or REPLACE FUNCTION is_latin(text) RETURNS BOOLEAN AS $$
+CREATE or REPLACE FUNCTION osml10n_is_latin(text) RETURNS BOOLEAN AS $$
   DECLARE
     i integer;
   BEGIN
@@ -64,7 +68,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 /* 
-   helper function "is_allowed_char_range"
+   helper function "osml10n_is_allowed_char_range"
    checks if string consists of allowed char_ranges only, These are currently
    
    * latin
@@ -72,7 +76,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    * cyrillic
    
 */
-CREATE or REPLACE FUNCTION is_allowed_char_range(text) RETURNS BOOLEAN AS $$
+CREATE or REPLACE FUNCTION osml10n_is_allowed_char_range(text) RETURNS BOOLEAN AS $$
   DECLARE
     i integer;
   BEGIN
@@ -90,7 +94,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
   checks if string contains CJK characters
   = 0x4e00-0x9FFF in unicode table
 */
-CREATE or REPLACE FUNCTION contains_cjk(text) RETURNS BOOLEAN AS $$
+CREATE or REPLACE FUNCTION osml10n_contains_cjk(text) RETURNS BOOLEAN AS $$
   DECLARE
     i integer;
     c integer;
@@ -106,65 +110,65 @@ CREATE or REPLACE FUNCTION contains_cjk(text) RETURNS BOOLEAN AS $$
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "street_abbreviation"
-   will call the street_abbreviation function of the given language if available
+   helper function "osml10n_street_abbrev"
+   will call the osml10n_street_abbrev function of the given language if available
    and return the unmodified input otherwise   
 */
-CREATE or REPLACE FUNCTION street_abbreviation(longname text, langcode text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) RETURNS TEXT AS $$
  DECLARE
   call text;
   result text;
  BEGIN
-  call='select street_abbreviation_' || langcode || '(''' || longname || ''')';
+  call='select osml10n_street_abbrev_' || langcode || '(''' || longname || ''')';
   execute call into result;
   return result;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "street_abbreviation_all"
-   call all street_abbreviation functions
+   helper function "osml10n_street_abbrev_all"
+   call all osml10n_street_abbrev functions
    These are currently russian, english and german
    
 */
-CREATE or REPLACE FUNCTION street_abbreviation_all(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=street_abbreviation_de(longname);
-  abbrev=street_abbreviation_en(abbrev);
-  abbrev=street_abbreviation_ru(abbrev);
+  abbrev=osml10n_street_abbrev_de(longname);
+  abbrev=osml10n_street_abbrev_en(abbrev);
+  abbrev=osml10n_street_abbrev_ru(abbrev);
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "street_abbreviation_all_latin"
-   call all latin street_abbreviation functions
+   helper function "osml10n_street_abbrev_all_latin"
+   call all latin osml10n_street_abbrev functions
    These are currently: english and german
    
 */
-CREATE or REPLACE FUNCTION street_abbreviation_all_latin(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_all_latin(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=street_abbreviation_de(longname);
-  abbrev=street_abbreviation_en(abbrev);
+  abbrev=osml10n_street_abbrev_de(longname);
+  abbrev=osml10n_street_abbrev_en(abbrev);
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "street_abbreviation_non_latin"
-   call all non latin street_abbreviation functions
+   helper function "osml10n_street_abbrev_non_latin"
+   call all non latin osml10n_street_abbrev functions
    These are currently: russian
    
 */
-CREATE or REPLACE FUNCTION street_abbreviation_non_latin(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=street_abbreviation_ru(longname);
+  abbrev=osml10n_street_abbrev_ru(longname);
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -172,10 +176,10 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 /* 
-   helper function "street_abbreviation_de"
+   helper function "osml10n_street_abbrev_de"
    replaces some common parts of german street names with their abbr
 */
-CREATE or REPLACE FUNCTION street_abbreviation_de(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_de(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN
@@ -215,12 +219,12 @@ CREATE or REPLACE FUNCTION street_abbreviation_de(longname text) RETURNS TEXT AS
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "street_abbreviation_en"
+   helper function "osml10n_street_abbrev_en"
    replaces some common parts of english street names with their abbr
    Most common abbreviations extracted from:
    http://www.ponderweasel.com/whats-the-difference-between-an-ave-rd-st-ln-dr-way-pl-blvd-etc/
 */
-CREATE or REPLACE FUNCTION street_abbreviation_en(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN
@@ -239,10 +243,10 @@ CREATE or REPLACE FUNCTION street_abbreviation_en(longname text) RETURNS TEXT AS
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "street_abbreviation_ru"
+   helper function "osml10n_street_abbrev_ru"
    replaces улица (ulica) with ул. (ul.)
 */
-CREATE or REPLACE FUNCTION street_abbreviation_ru(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_ru(longname text) RETURNS TEXT AS $$
  BEGIN
   return regexp_replace(longname,'улица','ул.');
  END;
@@ -251,15 +255,15 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 /* 
-   helper function "gen_bracketed_name"
+   helper function "osml10n_gen_bracketed_name"
    Will create a name (name in brackets) pair       
 */       
-CREATE or REPLACE FUNCTION gen_bracketed_name(local_name text, name text, loc_in_brackets boolean) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text, loc_in_brackets boolean) RETURNS TEXT AS $$
  BEGIN
   IF (name is NULL) THEN
    return local_name;
   END IF;
-  if is_allowed_char_range(name) THEN
+  if osml10n_is_allowed_char_range(name) THEN
    IF ( position(local_name in name)>0 or position('(' in name)>0 or position('(' in local_name)>0 ) THEN    
     IF ( loc_in_brackets ) THEN
      return name;                                                       
@@ -280,7 +284,7 @@ CREATE or REPLACE FUNCTION gen_bracketed_name(local_name text, name text, loc_in
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
-CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   BEGIN
     IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
@@ -294,22 +298,22 @@ CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, i
           IF is_latin(name) THEN
             return name;
           ELSE /* called if name is not latin and transliteration is needed */
-            return gen_bracketed_name(geo_transliterate(name,place),name,loc_in_brackets);
+            return osml10n_gen_bracketed_name(osml10n_geo_translit(name,place),name,loc_in_brackets);
           END IF;
 	ELSE /* called if name_en != NULL */
-	  return gen_bracketed_name(name_en,name,loc_in_brackets);
+	  return osml10n_gen_bracketed_name(name_en,name,loc_in_brackets);
 	END IF;        
       ELSE /* called if int_name != NULL */
-       return gen_bracketed_name(int_name,name,loc_in_brackets);
+       return osml10n_gen_bracketed_name(int_name,name,loc_in_brackets);
       END IF;
     ELSE /* called if local_name != NULL */
-     return gen_bracketed_name(local_name,name,loc_in_brackets);
+     return osml10n_gen_bracketed_name(local_name,name,loc_in_brackets);
     END IF;
   END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
 
-CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, langcode text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, langcode text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
   DECLARE
     abbrevname text;
   BEGIN
@@ -323,35 +327,35 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
             return '';
           END IF;
           /*
-            This might be a target language name thus we call all latin street_abbreviation
+            This might be a target language name thus we call all latin osml10n_street_abbrev
             functions as it seems to be way too expensive to check if the given node is inside
             the country using the target language.
           */
           IF is_latin(name) THEN
-            abbrevname=street_abbreviation_all_latin(name);
+            abbrevname=osml10n_street_abbrev_all_latin(name);
             return abbrevname;            
           ELSE /* called if name is not latin and transliteration is needed */
-            abbrevname=street_abbreviation_non_latin(name);
-            return gen_bracketed_name(geo_transliterate(abbrevname,place),abbrevname,loc_in_brackets);
+            abbrevname=osml10n_street_abbrev_non_latin(name);
+            return osml10n_gen_bracketed_name(osml10n_geo_translit(abbrevname,place),abbrevname,loc_in_brackets);
           END IF;
           /*
             int_name is likely and name_en is certainly english
-            thus only run street_abbreviation_en on both
+            thus only run osml10n_street_abbrev_en on both
           */
 	ELSE /* called if name_en != NULL */
-	  return gen_bracketed_name(street_abbreviation_en(name_en),street_abbreviation_all(name),loc_in_brackets);
+	  return osml10n_gen_bracketed_name(osml10n_street_abbrev_en(name_en),osml10n_street_abbrev_all(name),loc_in_brackets);
 	END IF;        
       ELSE /* called if int_name != NULL */
-       return gen_bracketed_name(street_abbreviation_en(int_name),street_abbreviation_all(name),loc_in_brackets);
+       return osml10n_gen_bracketed_name(osml10n_street_abbrev_en(int_name),osml10n_street_abbrev_all(name),loc_in_brackets);
       END IF;
     ELSE /* called if local_name != NULL */
-     return gen_bracketed_name(street_abbreviation(local_name,langcode),street_abbreviation_all(name),loc_in_brackets);
+     return osml10n_gen_bracketed_name(osml10n_street_abbrev(local_name,langcode),osml10n_street_abbrev_all(name),loc_in_brackets);
     END IF;  
   END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
 
-CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   BEGIN
     IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
@@ -365,7 +369,7 @@ CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_
           IF is_latin(name) THEN
             return name;
           ELSE /* called if name is not latin and transliteration is needed */
-            return geo_transliterate(name,place);
+            return osml10n_geo_translit(name,place);
           END IF;
 	ELSE /* called if name_en != NULL */
 	  return name_en;

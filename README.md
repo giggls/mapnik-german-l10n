@@ -29,7 +29,7 @@ where highway='primary';
 
 For a localized version it can be changed like this:
 ```sql
-select get_localized_streetname(name,"name:de",int_name,"name:en",true,way) as name,way
+select osml10n_get_streetname(name,"name:de",int_name,"name:en",true,'de',way) as name,way
 from highways
 where highway='primary';
 ```   

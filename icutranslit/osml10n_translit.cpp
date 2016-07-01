@@ -1,8 +1,8 @@
 /*
  
 Load using the following command:
-CREATE FUNCTION transliterate(text) RETURNS text
-AS '/path/to/utf8trans.so', 'transliterate' LANGUAGE C STRICT;
+CREATE FUNCTION osml10n_translit(text) RETURNS text
+AS '/path/to/osml10n_translit.so', 'osml10n_translit' LANGUAGE C STRICT;
 
 (c) 2013 Sven Geggus <sven-osm@geggus.net>
 
@@ -25,9 +25,9 @@ extern "C" {
 PG_MODULE_MAGIC;
 #endif
 
-PG_FUNCTION_INFO_V1(transliterate);
+PG_FUNCTION_INFO_V1(osml10n_translit);
 
-Datum transliterate(PG_FUNCTION_ARGS) {
+Datum osml10n_translit(PG_FUNCTION_ARGS) {
   Transliterator *latin_tl;
   UErrorCode status = U_ZERO_ERROR;
   char *inbuf,*outbuf;

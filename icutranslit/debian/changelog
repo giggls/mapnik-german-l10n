@@ -1,3 +1,10 @@
+icutranslit (1.99.0) unstable; urgency=low
+
+  * Change function names to unique prefix osml10n_
+  * 2.0 will hopefully use CREATE EXTENSION
+
+ -- Sven Geggus <sven-deb@geggus.net>  Fri, 01 Jul 2016 13:44:44 +0200
+
 utf8translit (1.0.1) unstable; urgency=low
 
   * bugfix release

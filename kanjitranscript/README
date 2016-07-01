@@ -6,18 +6,18 @@ http://kakasi.namazu.org/
 We currently use this code for place dependant (only in japan) localisation
 of the German Mapnik style.
 
-Transliteration is the last resort if no latin name:de, int_name, name:en or
+Transcription is the last resort if no latin name:de, int_name, name:en or
 name:ja_rm has been found by the get_localized_name PL/pgSQL function.
 
-To enable the kanji_tranliterate function in your database execute the
+To enable the osml10n_kanji_transcript function in your database execute the
 following code as database root user:
 
-CREATE FUNCTION kanji_transliterate(text) RETURNS text AS '$libdir/kanjitranslit', 'kanji_transliterate' LANGUAGE C STRICT;
+CREATE FUNCTION osml10n_kanji_transcript(text) RETURNS text AS '$libdir/osml10n_kanjitranscript.so', 'osml10n_kanji_transcript' LANGUAGE C STRICT;
 
 Afterwards the function can then be used like this:
 
-mydb=>  select kanji_transliterate('漢字');
- kanji_transliterate
+mydb=>  select osml10n_kanji_transcript('漢字');
+ osml10n_kanji_transcript
 ---------------
  kanji
 (1 row)

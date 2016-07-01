@@ -1,5 +1,5 @@
 /*
-   geo_transliterate
+   osml10_geo_translit
    
    a geolocation aware transliteration function if no koordinates are given
    fall back to generic transliteration 
@@ -8,15 +8,22 @@
    
    Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
    
+   usage examples:
+   select osml10n_geo_translit('東京',ST_Transform(ST_GeomFromText('POINT(137 35)',4326),3857));
+    ---> "toukyou"
+    
+   select osml10n_geo_translit('東京');
+    ---> "dōng jīng"
+   
 */
 
-CREATE or REPLACE FUNCTION geo_transliterate(name text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   DECLARE
     country text;
   BEGIN
-    RAISE LOG 'going to transliterate %', name;
+    -- RAISE LOG 'going to transliterate %', name;
     IF (place IS NULL) THEN
-      return transliterate(name);
+      return osml10n_translit(name);
     ELSE
       /* 
          Look up the country where the geometry is located and call
@@ -25,21 +32,20 @@ CREATE or REPLACE FUNCTION geo_transliterate(name text, place geometry DEFAULT N
          Currently only japan is treated defferently, but other country
          specific transliteration functions can be added easily
       */
-      country=get_country(place);
+      country=osml10n_get_country(place);
 
       CASE
         WHEN country='jp' THEN
-          /* call kanji_transliterate only on cjk charakters
+          /* call osml10n_kanji_transcript only on cjk charakters
              not on hiragana and katakana
           */
-          if contains_cjk(name) THEN
-            RAISE LOG 'calling kanji_transliterate';
-            return kanji_transliterate(name);
+          if osml10n_contains_cjk(name) THEN
+            return osml10n_kanji_transcript(name);
           ELSE
-            return transliterate(name);
+            return osml10n_translit(name);
           END IF;
         ELSE
-          return transliterate(name);
+          return osml10n_translit(name);
       END CASE;
 
       return country;
