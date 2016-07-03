@@ -2,7 +2,7 @@ Source: osml10n
 Section: misc
 Priority: extra
 Maintainer: Sven Geggus <sven-osm@geggus.net>
-Build-Depends: debhelper (>= 8.0.0), libicu-dev, postgresql-server-dev-9.4, wget
+Build-Depends: debhelper (>= 8.0.0), libicu-dev, postgresql-server-dev-9.4, wget, libkakasi2-dev, libutf8proc-dev
 Standards-Version: 3.9.2
 
 Package: postgresql-9.4-osml10n
