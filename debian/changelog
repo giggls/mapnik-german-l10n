@@ -1,0 +1,5 @@
+osml10n (2.0.0) unstable; urgency=low
+
+  * PostgreSQL extension osml10n for map localisation
+
+ -- Sven Geggus <sven-osm@geggus.net>  Sun, 03 Jul 2016 14:41:31 +0200  

@@ -1,5 +1,5 @@
 /*
-   osml10_geo_translit
+   osml10n_geo_translit
    
    a geolocation aware transliteration function if no koordinates are given
    fall back to generic transliteration 

@@ -1,0 +1,19 @@
+Source: osml10n
+Section: misc
+Priority: extra
+Maintainer: Sven Geggus <sven-osm@geggus.net>
+Build-Depends: debhelper (>= 8.0.0), libicu-dev, postgresql-server-dev-9.4, wget
+Standards-Version: 3.9.2
+
+Package: postgresql-9.4-osml10n
+Architecture: any
+Conflicts: postgresql-9.4-utf8translit, utf8translit-9.4, postgresql-9.4-kanjitranslit
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.4
+Description: l10n package for generation of OSM based maps from PostGIS
+ localisation package  for generation of OSM based maps from PostGIS.
+ This is currently used in german mapnik style but can be used in a
+ renderer independant way because ist is based on PostgreSQL stored
+ procedures. This includes a transliteration function based on
+ ICU any-latin, a kanji transcription library based on
+ libkakasi and a couple of pl/pgSQL funktions.
+ 

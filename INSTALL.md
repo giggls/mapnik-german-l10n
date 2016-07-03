@@ -29,24 +29,21 @@ make deb
 To make this work you will need to install the required libraries:
 `libicu-dev, libkakasi2-dev, postgresql-server-dev-9.4`
 
-On other Distributions use `make/make install`.
+On other Distributions it should work to use `make/make install`.
+I would be happy if somebody would contribute a spec-file for rpm based
+distributions though.
 
-### 2. Enable the C/C++ stored procedures (requires database admin privileges)
+The build process will need to download country_osm_grid.sql from
+https://github.com/twain47/Nominatim/raw/master/data/country_osm_grid.sql
+If your computer is offline for some reason. Just download this file and
+put it inside your build directory.
 
-
-On a psql shell issue the following command (will need superuser privileges):
-
+### 2. Load our extensions into your database
 ```sql
-CREATE FUNCTION osml10n_kanji_transcript(text)
-RETURNS text AS '$libdir/osml10n_kanjitranscript.so', 'osml10n_kanji_transcript'
-LANGUAGE C STRICT;
+CREATE EXTENSION postgis;
+CREATE EXTENSION osml10n;
 ```
 
-```sql
-CREATE FUNCTION osml10n_translit(text)
-RETURNS text AS '$libdir/osml10n_translit.so', 'osml10n_translit'
-LANGUAGE C STRICT;
-```
 
 Afterwards you should be able to do the following:
 
@@ -66,17 +63,3 @@ yourdb=# select osml10n_kanji_transcript('漢字');
  (1 row)
 ```
 
-### 3. Add table country_osm_grid from nominatim repository
-
-```
-wget https://github.com/twain47/Nominatim/raw/master/data/country_osm_grid.sql
-psql -f country_osm_grid.sql yourdb
-```
-
-### 4. Enable the PL/pgSQL stored procedures
-
-To do this all sql files from plpgsql diectory have to be applied to your
-database:
-```
-pushd plpgsql; for sql in *.sql; do psql -f $sql yourdb; done; popd
-```

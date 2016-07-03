@@ -13,7 +13,13 @@ Currently the code consists of three parts:
 3. A couple of PL/pgSQL functions which can be used to generate labels for
    map rendering.
 
-See **INSTALL.md** file for installation instructions
+See **INSTALL.md** file from sources for manual installation instructions.
+If you just installed the debian package all you have to do now ist to enable
+our extension in your PostgreSQL database as follows:
+
+```sql
+CREATE EXTENSION osml10n;
+```
 
 For SQL usage examples have a look at `plpgsql/get_localized_name.sql`
 
