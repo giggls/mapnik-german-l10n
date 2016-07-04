@@ -45,5 +45,6 @@ echo "-- country_osm_grid.sql --------------------------------------------------
 sed '/^COPY.*$/,/^\\\.$/d;//d' country_osm_grid.sql |grep -v -e '^--' |grep -v 'CREATE INDEX' | cat -s >>osml10n--$2.sql
 echo -e "COPY country_osm_grid (country_code, area, geometry) FROM '$1/osml10n_country_osm_grid.data';\n"  >>osml10n--$2.sql
 grep 'CREATE INDEX' country_osm_grid.sql  >>osml10n--$2.sql
+echo "GRANT SELECT on country_osm_grid to public;" >>osml10n--$2.sql
 
 sed '/^COPY.*$/,/^\\\.$/!d;//d'  country_osm_grid.sql >osml10n_country_osm_grid.data
