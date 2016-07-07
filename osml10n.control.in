@@ -1,4 +1,4 @@
 # osml10n extension
-comment = '10n functions for Openstreetmap based maps'
+comment = 'Localization functions for Openstreetmap based maps'
 default_version = 'VERSION'
 relocatable = true
