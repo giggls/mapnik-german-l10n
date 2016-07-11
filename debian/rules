@@ -8,7 +8,7 @@
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
-export TMPTARGET=$(PWD)/debian/postgresql-9.4-osml10n
+export TMPTARGET=$(PWD)/debian/postgresql-9.5-osml10n
 
 %:
 	dh $@ 

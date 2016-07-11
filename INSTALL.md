@@ -27,7 +27,10 @@ make deb
 ```
 
 To make this work you will need to install the required libraries:
-`libicu-dev, libkakasi2-dev, postgresql-server-dev-9.4`
+`libicu-dev, libkakasi2-dev, postgresql-server-dev-9.5`
+
+To build this software for Debian 8.x (stable) or Ubuntu 14.04 use
+the debian8x branch.
 
 On other Distributions it should work to use `make/make install`.
 I would be happy if somebody would contribute a spec-file for rpm based
