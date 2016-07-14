@@ -1,3 +1,9 @@
+osml10n (2.0.1) unstable; urgency=medium
+
+  * Fix bug: function is called osml10n_is_latin not is_latin anymore
+
+ -- Sven Geggus <sven-debian@geggus.net>  Thu, 14 Jul 2016 20:00:54 +0200
+
 osml10n (2.0.0) unstable; urgency=low
 
   * PostgreSQL extension osml10n for map localisation

@@ -50,7 +50,7 @@ Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 
 
 /* 
-   helper function "is_latin"
+   helper function "osml10n_is_latin"
    checks if string consists of latin characters only
 */
 CREATE or REPLACE FUNCTION osml10n_is_latin(text) RETURNS BOOLEAN AS $$
@@ -90,7 +90,7 @@ CREATE or REPLACE FUNCTION osml10n_is_allowed_char_range(text) RETURNS BOOLEAN A
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "contains_cjk"
+   helper function "osml10n_contains_cjk"
   checks if string contains CJK characters
   = 0x4e00-0x9FFF in unicode table
 */
@@ -295,7 +295,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename(name text, local_name text, int
           if (name = '') THEN
             return '';
           END IF;
-          IF is_latin(name) THEN
+          IF osml10n_is_latin(name) THEN
             return name;
           ELSE /* called if name is not latin and transliteration is needed */
             return osml10n_gen_bracketed_name(osml10n_geo_translit(name,place),name,loc_in_brackets);
@@ -331,7 +331,7 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname(name text, local_name text, in
             functions as it seems to be way too expensive to check if the given node is inside
             the country using the target language.
           */
-          IF is_latin(name) THEN
+          IF osml10n_is_latin(name) THEN
             abbrevname=osml10n_street_abbrev_all_latin(name);
             return abbrevname;            
           ELSE /* called if name is not latin and transliteration is needed */
@@ -366,7 +366,7 @@ CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets(name text, local_na
           if (name = '') THEN
             return '';
           END IF;
-          IF is_latin(name) THEN
+          IF osml10n_is_latin(name) THEN
             return name;
           ELSE /* called if name is not latin and transliteration is needed */
             return osml10n_geo_translit(name,place);
