@@ -47,4 +47,13 @@ echo -e "COPY country_osm_grid (country_code, area, geometry) FROM '$1/osml10n_c
 grep 'CREATE INDEX' country_osm_grid.sql  >>osml10n--$2.sql
 echo "GRANT SELECT on country_osm_grid to public;" >>osml10n--$2.sql
 
+echo "
+-- function osml10n_version  -----------------------------------------------------------------
+CREATE or REPLACE FUNCTION osml10n_version() RETURNS TEXT AS \$\$
+ BEGIN
+  RETURN '$2';
+ END;
+\$\$ LANGUAGE 'plpgsql' IMMUTABLE;
+" >>osml10n--$2.sql
+
 sed '/^COPY.*$/,/^\\\.$/!d;//d'  country_osm_grid.sql >osml10n_country_osm_grid.data
