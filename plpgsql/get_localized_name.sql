@@ -247,6 +247,8 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    replaces улица (ulica) with ул. (ul.)
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_ru(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
  BEGIN
   abbrev=regexp_replace(longname,'переулок','пер.');
   abbrev=regexp_replace(abbrev,'тупик','туп.');
