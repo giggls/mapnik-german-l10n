@@ -41,6 +41,8 @@ select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,'Voz
        --> "ул. Воздвиженка (Vozdvizhenka St.)"
 select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,NULL,true,'de');
        --> "ул. Воздвиженка (ul. Vozdviženka)"
+select osml10n_get_streetname('вулиця Молока',NULL,NULL,NULL,true,'de');
+       --> "вул. Молока (vul. Moloka)"
 
 (c) 2014-2016 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de>
 
