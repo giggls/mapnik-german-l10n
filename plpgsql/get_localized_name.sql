@@ -254,6 +254,10 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_ru(longname text) RETURNS TEXT 
   abbrev=regexp_replace(abbrev,'тупик','туп.');
   abbrev=regexp_replace(abbrev,'улица','ул.');
   abbrev=regexp_replace(abbrev,'бульвар','бул.');
+  abbrev=regexp_replace(abbrev,'площадь','пл.');
+  abbrev=regexp_replace(abbrev,'проспект','просп.');
+  abbrev=regexp_replace(abbrev,'спуск','сп.');
+  abbrev=regexp_replace(abbrev,'набережная','наб.');
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
