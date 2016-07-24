@@ -41,6 +41,8 @@ select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,'Voz
        --> "ул. Воздвиженка (Vozdvizhenka St.)"
 select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,NULL,true,'de');
        --> "ул. Воздвиженка (ul. Vozdviženka)"
+select osml10n_get_streetname('вулиця Молока',NULL,NULL,NULL,true,'de');
+       --> "вул. Молока (vul. Moloka)"
 
 (c) 2014-2016 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de>
 
@@ -161,7 +163,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 /* 
    helper function "osml10n_street_abbrev_non_latin"
    call all non latin osml10n_street_abbrev functions
-   These are currently: russian
+   These are currently: russian, ukrainian
    
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
@@ -169,6 +171,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURN
   abbrev text;
  BEGIN
   abbrev=osml10n_street_abbrev_ru(longname);
+  abbrev=osml10n_street_abbrev_uk(abbrev);
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -258,6 +261,26 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_ru(longname text) RETURNS TEXT 
   abbrev=regexp_replace(abbrev,'проспект','просп.');
   abbrev=regexp_replace(abbrev,'спуск','сп.');
   abbrev=regexp_replace(abbrev,'набережная','наб.');
+  return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "osml10n_street_abbrev_uk"
+   replaces ukrainian street suffixes with their abbreviations
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_uk(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=regexp_replace(longname,'провулок','пров.');
+  abbrev=regexp_replace(abbrev,'тупик','туп.');
+  abbrev=regexp_replace(abbrev,'вулиця','вул.');
+  abbrev=regexp_replace(abbrev,'бульвар','бул.');
+  abbrev=regexp_replace(abbrev,'площа','пл.');
+  abbrev=regexp_replace(abbrev,'проспект','просп.');
+  abbrev=regexp_replace(abbrev,'спуск','сп.');
+  abbrev=regexp_replace(abbrev,'набережна','наб.');
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
