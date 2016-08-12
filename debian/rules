@@ -8,7 +8,6 @@
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
-export TMPTARGET=$(PWD)/debian/postgresql-$$PGVERSION-osml10n
 
 # Automatically create a debian/control file
 # for the most recent supported version of Postgres.
@@ -21,6 +20,9 @@ gencontrol:
 
 override_dh_auto_configure: gencontrol
 	dh_auto_configure
+
+override_dh_auto_install:
+	make TMPTARGET=$(PWD)/debian/postgresql-`pg_buildext supported-versions $(CURDIR) | tail -1`-osml10n install
 
 override_dh_clean:
 	dh_clean

@@ -5,8 +5,9 @@
 * Kanji Kana Simple Inverter library (http://kakasi.namazu.org/)
 * ICU - International Components for Unicode library (http://site.icu-project.org/)
 
-This code is currently tested on Debian 8.x, Ubuntu 14.04 and Ubuntu 16.04
-only but should also work on other GNU/Linux dsitributions.
+This code is developed on Debian 8.x and verified to also work on Ubuntu
+14.04 and Ubuntu 16.04 only but should also work on other GNU/Linux
+distributions.
 
 All required libraries can be installed from their respective repositories.
 
