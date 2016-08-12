@@ -10,7 +10,7 @@ README
 INSTALL
 country_osm_grid.sql
 osml10n_country_osm_grid.data
-debian/postgresql-9.5-osml10n*
+debian/postgresql-*-osml10n*
 osml10n--*.sql
 osml10n.control
 debian/files

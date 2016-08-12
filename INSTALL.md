@@ -1,12 +1,12 @@
 ## Software requirements:
 
 * GNU/Linux OS
-* Postgresql 8.4, PostGIS 2.x
+* Postgresql 8.4 or 8.5, PostGIS 2.x
 * Kanji Kana Simple Inverter library (http://kakasi.namazu.org/)
 * ICU - International Components for Unicode library (http://site.icu-project.org/)
 
-This code is currently tested on Debian/Ubuntu only but should also work on
-other GNU/Linux dsitributions.
+This code is currently tested on Debian 8.x, Ubuntu 14.04 and Ubuntu 16.04
+only but should also work on other GNU/Linux dsitributions.
 
 All required libraries can be installed from their respective repositories.
 
@@ -27,14 +27,11 @@ make deb
 ```
 
 To make this work you will need to install the required libraries:
-`libicu-dev, libkakasi2-dev, postgresql-server-dev-9.5`
-
-To build this software for Debian 8.x (stable) or Ubuntu 14.04 use
-the debian8x branch.
+`libicu-dev, libkakasi2-dev, postgresql-server-dev-9.4 or postgresql-server-dev-9.5 respectively`
 
 On other Distributions it should work to use `make/make install`.
 I would be happy if somebody would contribute a spec-file for rpm based
-distributions though.
+distributions.
 
 The build process will need to download country_osm_grid.sql from
 https://github.com/twain47/Nominatim/raw/master/data/country_osm_grid.sql

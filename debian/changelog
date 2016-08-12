@@ -1,3 +1,10 @@
+osml10n (2.0.3) unstable; urgency=medium
+
+  * This version of the pacvkage will build with either version
+    of PostgreSQL 9.4 or 9.5 respectively
+
+ -- Sven Geggus <sven-debian@geggus.net>  Fri, 12 Aug 2016 10:27:36 +0200
+
 osml10n (2.0.2) unstable; urgency=low
 
   * Add psql function osml10n_version
