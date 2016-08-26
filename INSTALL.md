@@ -42,6 +42,7 @@ put it inside your build directory.
 ### 2. Load our extensions into your database
 ```sql
 CREATE EXTENSION postgis;
+CREATE EXTENSION hstore;
 CREATE EXTENSION osml10n;
 ```
 
