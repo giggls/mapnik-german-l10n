@@ -23,7 +23,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) R
   call text;
   result text;
  BEGIN
-  call='select osml10n_street_abbrev_' || langcode || '(''' || longname || ''')';
+  call='select osml10n_street_abbrev_' || langcode || '(' || quote_nullable(longname) || ')';
   execute call into result;
   return result;
  END;
