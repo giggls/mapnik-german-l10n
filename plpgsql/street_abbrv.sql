@@ -21,11 +21,16 @@ Street abbreviation functions
 CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) RETURNS TEXT AS $$
  DECLARE
   call text;
+  func text;
   result text;
  BEGIN
-  call='select osml10n_street_abbrev_' || langcode || '(' || quote_nullable(longname) || ')';
+  func ='osml10n_street_abbrev_'|| langcode;
+  call = 'select ' || func || '(' || quote_nullable(longname) || ')';
   execute call into result;
   return result;
+ EXCEPTION
+  WHEN undefined_function THEN
+   return longname;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
@@ -124,8 +129,41 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_de(longname text) RETURNS TEXT 
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
+   helper function "osml10n_street_abbrev_fr"
+   replaces some common parts of french street names with their abbreviation
+   currently just a stub :(
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT AS $$
+ BEGIN
+  return longname;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "osml10n_street_abbrev_es"
+   replaces some common parts of spanish street names with their abbreviation
+   currently just a stub :(
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_es(longname text) RETURNS TEXT AS $$
+ BEGIN
+  return longname;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "osml10n_street_abbrev_pt"
+   replaces some common parts of portuguese street names with their abbreviation
+   currently just a stub :(
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_pt(longname text) RETURNS TEXT AS $$
+ BEGIN
+  return longname;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
    helper function "osml10n_street_abbrev_en"
-   replaces some common parts of english street names with their abbr
+   replaces some common parts of english street names with their abbreviation
    Most common abbreviations extracted from:
    http://www.ponderweasel.com/whats-the-difference-between-an-ave-rd-st-ln-dr-way-pl-blvd-etc/
 */
@@ -146,6 +184,8 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+
 
 /* 
    helper function "osml10n_street_abbrev_ru"

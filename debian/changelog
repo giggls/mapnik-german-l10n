@@ -1,3 +1,9 @@
+osml10n (2.1.2) unstable; urgency=medium
+
+  * Yet another bugfix: ignore invalid languages in abbreviation function call
+
+ -- Sven Geggus <sven-debian@geggus.net>  Wed, 07 Sep 2016 22:35:20 +0200
+
 osml10n (2.1.1) unstable; urgency=medium
 
   * Bugfix release: Properly escape execute call to allow for single quotes in osm name tags
