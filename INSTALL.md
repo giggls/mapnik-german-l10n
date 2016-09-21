@@ -28,7 +28,9 @@ make deb
 ```
 
 To make this work you will need to install the required libraries:
-`libicu-dev, libkakasi2-dev, postgresql-server-dev-9.4 or postgresql-server-dev-9.5 respectively`
+
+    apt-get install libicu-dev libkakasi2-dev postgresql-server-dev-9.5 build-essential debhelper pandoc libutf8proc-dev
+
 
 On other Distributions it should work to use `make/make install`.
 I would be happy if somebody would contribute a spec-file for rpm based
