@@ -1,3 +1,11 @@
+osml10n (2.1.3) unstable; urgency=medium
+
+  * Get rid of osml10n_is_allowed_char_range function.
+    The mapnik style now uses Noto Fonts thus it should
+    be possible to intermix all glyphs
+
+ -- Sven Geggus <sven-debian@geggus.net>  Sat, 01 Oct 2016 14:20:41 +0200
+
 osml10n (2.1.2) unstable; urgency=medium
 
   * Yet another bugfix: ignore invalid languages in abbreviation function call

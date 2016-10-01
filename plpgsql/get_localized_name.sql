@@ -29,29 +29,6 @@ CREATE or REPLACE FUNCTION osml10n_is_latin(text) RETURNS BOOLEAN AS $$
   END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
-
-/* 
-   helper function "osml10n_is_allowed_char_range"
-   checks if string consists of allowed char_ranges only, These are currently
-   
-   * latin
-   * greek
-   * cyrillic
-   
-*/
-CREATE or REPLACE FUNCTION osml10n_is_allowed_char_range(text) RETURNS BOOLEAN AS $$
-  DECLARE
-    i integer;
-  BEGIN
-    FOR i IN 1..char_length($1) LOOP
-      IF (ascii(substr($1, i, 1)) > 1327) THEN
-        RETURN false;
-      END IF;
-    END LOOP;
-    RETURN true;
-  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
-
 /* 
    helper function "osml10n_contains_cjk"
   checks if string contains CJK characters
@@ -81,22 +58,18 @@ CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text
   IF (name is NULL) THEN
    return local_name;
   END IF;
-  if osml10n_is_allowed_char_range(name) THEN
-   IF ( position(local_name in name)>0 or position('(' in name)>0 or position('(' in local_name)>0 ) THEN    
-    IF ( loc_in_brackets ) THEN
-     return name;                                                       
-    ELSE
-     return local_name;
-    END IF;
+  IF ( position(local_name in name)>0 or position('(' in name)>0 or position('(' in local_name)>0 ) THEN    
+   IF ( loc_in_brackets ) THEN
+    return name;                                                       
    ELSE
-    IF ( loc_in_brackets ) THEN
-      return name||' ('||local_name||')';
-    ELSE
-      return local_name||' ('||name||')';
-    END IF;
+    return local_name;
    END IF;
   ELSE
-   return local_name;
+   IF ( loc_in_brackets ) THEN
+     return name||' ('||local_name||')';
+   ELSE
+     return local_name||' ('||name||')';
+   END IF;
   END IF;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
