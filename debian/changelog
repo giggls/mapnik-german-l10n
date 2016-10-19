@@ -1,3 +1,9 @@
+osml10n (2.1.4) unstable; urgency=medium
+
+  * Bugfix for generation of bracketed names.
+
+ -- Sven Geggus <sven-debian@geggus.net>  Wed, 19 Oct 2016 09:47:39 +0200
+
 osml10n (2.1.3) unstable; urgency=medium
 
   * Get rid of osml10n_is_allowed_char_range function.

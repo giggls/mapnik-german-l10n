@@ -54,16 +54,31 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    Will create a name (name in brackets) pair       
 */       
 CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text, loc_in_brackets boolean) RETURNS TEXT AS $$
+ DECLARE
+   nobrackets boolean;
+   regex text;
  BEGIN
   IF (name is NULL) THEN
    return local_name;
   END IF;
-  IF ( position(local_name in name)>0 or position('(' in name)>0 or position('(' in local_name)>0 ) THEN    
-   IF ( loc_in_brackets ) THEN
+  nobrackets=false;
+  /* Now we need to do some heuristic to check if the generation of a
+     bracketed name is a good idea.
+  
+     Currently we do the following:
+     If local_name is part of name as a single word, not just as a substring
+     we return name and discard local_name.
+     Otherwise we return a combined bracketed name with name and local_name
+  */
+  if (position(local_name in name) >0) THEN
+    regex = '[\s\(\)\-,;:/\[\]]('||local_name||')[\s\(\)\-,;:/\[\]]';
+    IF regexp_matches(' '||name||' ',regex) IS NOT NULL THEN
+      nobrackets=true;
+    END IF;
+  END IF;
+  
+  IF nobrackets THEN    
     return name;                                                       
-   ELSE
-    return local_name;
-   END IF;
   ELSE
    IF ( loc_in_brackets ) THEN
      return name||' ('||local_name||')';
