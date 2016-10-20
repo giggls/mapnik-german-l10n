@@ -1,3 +1,9 @@
+osml10n (2.1.5) unstable; urgency=medium
+
+  * Bugfix for Bugfix :(
+
+ -- Sven Geggus <sven-debian@geggus.net>  Thu, 20 Oct 2016 22:02:13 +0200
+
 osml10n (2.1.4) unstable; urgency=medium
 
   * Bugfix for generation of bracketed names.

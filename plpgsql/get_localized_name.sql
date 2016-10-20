@@ -71,8 +71,11 @@ CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text
      Otherwise we return a combined bracketed name with name and local_name
   */
   if (position(local_name in name) >0) THEN
-    regex = '[\s\(\)\-,;:/\[\]]('||local_name||')[\s\(\)\-,;:/\[\]]';
-    IF regexp_matches(' '||name||' ',regex) IS NOT NULL THEN
+    /* the regexp_replace function below is a quotemeta equivalent 
+       http://stackoverflow.com/questions/11442090/implementing-quotemeta-q-e-in-tcl/11442113
+    */
+    regex = '[\s\(\)\-,;:/\[\]]('|| regexp_replace(local_name, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
+    IF regexp_matches(concat(' ',name,' '),regex) IS NOT NULL THEN
       nobrackets=true;
     END IF;
   END IF;
