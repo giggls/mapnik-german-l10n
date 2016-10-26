@@ -41,10 +41,11 @@ https://github.com/twain47/Nominatim/raw/master/data/country_osm_grid.sql
 If your computer is offline for some reason. Just download this file and
 put it inside your build directory.
 
-### 2. Load our extensions into your database
+### 2. Load the required extensions into your database
 ```sql
 CREATE EXTENSION postgis;
 CREATE EXTENSION hstore;
+CREATE EXTENSION unaccent;
 CREATE EXTENSION osml10n;
 ```
 

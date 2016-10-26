@@ -44,9 +44,7 @@ deb:
 	dpkg-buildpackage -b -us -uc
 
 clean: $(CLEANDIRS)
-	rm -f $(patsubst %.md,%.html,$(wildcard *.md))
-	rm -f *.bak *~ *.deb *.changes *.dsc *.tar.*
-	rm -f osml10n--* osml10n.control osml10n_country_osm_grid.data
+	rm -rf $$(cat .gitignore)
 	
 $(CLEANDIRS):
 	$(MAKE) -C $(@:clean-%=%) clean
