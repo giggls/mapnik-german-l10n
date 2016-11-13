@@ -35,7 +35,7 @@ install: $(INSTALLDIRS) all
 	mkdir -p $(TMPTARGET)$(EXTDIR)/extension
 	install -D -c -m 644 osml10n--$(EXTVERSION).sql $(TMPTARGET)$(EXTDIR)/extension/
 	install -D -c -m 644 osml10n.control $(TMPTARGET)$(EXTDIR)/extension/
-	install -D -c -m 644 osml10n_country_osm_grid.data $(TMPTARGET)$(EXTDIR)/extension/
+	install -D -c -m 644 *.data $(TMPTARGET)$(EXTDIR)/extension/
 
 $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install
@@ -44,14 +44,21 @@ deb:
 	dpkg-buildpackage -b -us -uc
 
 clean: $(CLEANDIRS)
-	rm -rf $$(cat .gitignore)
+	rm -rf $$(grep -v country_osm_grid.sql .gitignore)
+	
+# remove everything including the files from the interwebs
+mrproper: clean
+	rm country_osm_grid.sql
+	rm country_languages.data
 	
 $(CLEANDIRS):
 	$(MAKE) -C $(@:clean-%=%) clean
 
-osml10n--$(EXTVERSION).sql: plpgsql/*.sql
+osml10n--$(EXTVERSION).sql: plpgsql/*.sql country_languages.data
 	./genextension.sh $(EXTDIR)/extension $(EXTVERSION)
 
 osml10n.control: osml10n--$(EXTVERSION).sql
 	sed -e "s/VERSION/$(EXTVERSION)/g" osml10n.control.in >osml10n.control
 
+country_languages.data:
+	./gen_country_languages_table.py >country_languages.data

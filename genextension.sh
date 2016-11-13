@@ -47,6 +47,11 @@ echo -e "COPY country_osm_grid (country_code, area, geometry) FROM '$1/osml10n_c
 grep 'CREATE INDEX' country_osm_grid.sql  >>osml10n--$2.sql
 echo "GRANT SELECT on country_osm_grid to public;" >>osml10n--$2.sql
 
+echo -e "\n-- country_languages table from http://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes -----------------------------" >>osml10n--$2.sql
+echo "CREATE TABLE country_languages(iso text, langs text[]);" >>osml10n--$2.sql
+echo "COPY country_languages (iso, langs) FROM '$1/country_languages.data';"  >>osml10n--$2.sql
+echo -e "GRANT SELECT on country_languages to public;\n" >>osml10n--$2.sql
+
 echo "
 -- function osml10n_version  -----------------------------------------------------------------
 CREATE or REPLACE FUNCTION osml10n_version() RETURNS TEXT AS \$\$
