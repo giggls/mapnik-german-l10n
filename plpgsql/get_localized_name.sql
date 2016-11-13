@@ -50,10 +50,10 @@ CREATE or REPLACE FUNCTION osml10n_contains_cjk(text) RETURNS BOOLEAN AS $$
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
-   helper function "osml10n_gen_bracketed_name"
-   Will create a name (name in brackets) pair       
+   helper function "osml10n_gen_combined_name"
+   Will create a name+local_name pair       
 */       
-CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text, loc_in_brackets boolean) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text, loc_in_brackets boolean, show_brackets boolean DEFAULT true, separator text DEFAULT ' ') RETURNS TEXT AS $combined$
  DECLARE
    nobrackets boolean;
    regex text;
@@ -65,12 +65,12 @@ CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text
   END IF;
   nobrackets=false;
   /* Now we need to do some heuristic to check if the generation of a
-     bracketed name is a good idea.
+     combined name is a good idea.
   
      Currently we do the following:
      If local_name is part of name as a single word, not just as a substring
      we return name and discard local_name.
-     Otherwise we return a combined bracketed name with name and local_name
+     Otherwise we return a combined name with name and local_name
   */
   unacc = unaccent(name);
   unacc_local = unaccent(local_name);
@@ -78,29 +78,49 @@ CREATE or REPLACE FUNCTION osml10n_gen_bracketed_name(local_name text, name text
     /* the regexp_replace function below is a quotemeta equivalent 
        http://stackoverflow.com/questions/11442090/implementing-quotemeta-q-e-in-tcl/11442113
     */
-    regex = '[\s\(\)\-,;:/\[\]]('|| regexp_replace(unacc_local, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
+    regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc_local, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
+    -- raise notice 'regex: %',regex;
     IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
       nobrackets=true;
     END IF;
   END IF;
   
+  -- raise notice 'nobrackets: %',nobrackets;
   IF nobrackets THEN    
     return name;                                                       
   ELSE
    IF ( loc_in_brackets ) THEN
-     return name||' ('||local_name||')';
+     -- explicitely mark the whole string as LTR
+     IF ( show_brackets ) THEN
+       return chr(8237)||name||separator||'('||local_name||')'||chr(8236);
+     ELSE
+       return chr(8237)||name||separator||local_name||chr(8236);
+     END IF;
    ELSE
-     return local_name||' ('||name||')';
+     -- explicitely mark the whole string as LTR
+     IF ( show_brackets ) THEN
+       return chr(8237)||local_name||separator||'('||name||')'||chr(8236);
+    ELSE
+       return chr(8237)||local_name||separator||name||chr(8236);
+    END IF;
    END IF;
   END IF;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$combined$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
-CREATE or REPLACE FUNCTION osml10n_get_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_placename(name text,
+                                                 local_name text,
+                                                 int_name text,
+                                                 name_en text,
+                                                 loc_in_brackets boolean,
+                                                 show_brackets boolean DEFAULT false,
+                                                 separator text DEFAULT chr(10),                                                                                                                     
+                                                 place geometry DEFAULT NULL
+                                                 ) RETURNS TEXT AS $$
   BEGIN
     IF (local_name is not NULL) THEN
-      return osml10n_gen_bracketed_name(local_name,name,loc_in_brackets);
+      return osml10n_gen_combined_name(local_name,name,loc_in_brackets,show_brackets,separator);
     END IF;
     IF (name is not NULL) THEN
       if (name = '') THEN
@@ -113,26 +133,34 @@ CREATE or REPLACE FUNCTION osml10n_get_placename(name text, local_name text, int
       -- these are currently international and english names
       IF (int_name is not NULL) THEN
         if osml10n_is_latin(int_name) THEN
-          return osml10n_gen_bracketed_name(int_name,name,loc_in_brackets);
+          return osml10n_gen_combined_name(int_name,name,loc_in_brackets,show_brackets,separator);
         END IF;
       END IF;
       IF (name_en is not NULL) THEN
-        return osml10n_gen_bracketed_name(name_en,name,loc_in_brackets);
+        return osml10n_gen_combined_name(name_en,name,loc_in_brackets,show_brackets,separator);
       END IF;
       -- transliteration as last resort
-      return osml10n_gen_bracketed_name(osml10n_geo_translit(name,place),name,loc_in_brackets);
+      return osml10n_gen_combined_name(osml10n_geo_translit(name,place),name,loc_in_brackets,show_brackets,separator);
     ELSE
       return NULL;
     END IF;
   END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
-CREATE or REPLACE FUNCTION osml10n_get_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, langcode text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_streetname(name text,
+                                                  local_name text,
+                                                  int_name text,
+                                                  name_en text,
+                                                  loc_in_brackets boolean,
+                                                  show_brackets boolean DEFAULT false,
+                                                  separator text DEFAULT ' - ',
+                                                  langcode text DEFAULT 'de',
+                                                  place geometry DEFAULT NULL) RETURNS TEXT AS $$
   DECLARE
     abbrev text;
   BEGIN
     IF (local_name is not NULL) THEN
-      return osml10n_gen_bracketed_name(osml10n_street_abbrev(local_name,langcode),osml10n_street_abbrev_all(name),loc_in_brackets);
+      return osml10n_gen_combined_name(osml10n_street_abbrev(local_name,langcode),osml10n_street_abbrev_all(name),loc_in_brackets,show_brackets,separator);
     END IF;
     IF (name is not NULL) THEN
       if (name = '') THEN
@@ -145,15 +173,15 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname(name text, local_name text, in
       -- these are currently international and english names
       IF (int_name is not NULL) THEN
         if osml10n_is_latin(int_name) THEN
-          return osml10n_gen_bracketed_name(osml10n_street_abbrev_en(int_name),osml10n_street_abbrev_non_latin(name),loc_in_brackets);
+          return osml10n_gen_combined_name(osml10n_street_abbrev_en(int_name),osml10n_street_abbrev_non_latin(name),loc_in_brackets,show_brackets,separator);
         END IF;
       END IF;
       IF (name_en is not NULL) THEN
-        return osml10n_gen_bracketed_name(osml10n_street_abbrev_en(name_en),osml10n_street_abbrev_non_latin(name),loc_in_brackets);
+        return osml10n_gen_combined_name(osml10n_street_abbrev_en(name_en),osml10n_street_abbrev_non_latin(name),loc_in_brackets,show_brackets,separator);
       END IF;
       -- transliteration as last resort
       abbrev = osml10n_street_abbrev_non_latin(name);
-      return osml10n_gen_bracketed_name(osml10n_geo_translit(abbrev,place),abbrev,loc_in_brackets);
+      return osml10n_gen_combined_name(osml10n_geo_translit(abbrev,place),abbrev,loc_in_brackets,show_brackets,separator);
     ELSE
       return NULL;
     END IF;

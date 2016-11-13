@@ -50,49 +50,68 @@ A convinient way of using these functions is to hide them behind a virtual colum
 #### Old style
 ```
 select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',true) as name;
-      ---> "Москва́ (Moskau)"
+      -->	Москва́
+		Moskau
 select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',false) as name;
-      ---> "Moskau (Москва́)"
+      -->	Moskau
+		Москва́
 select osml10n_get_placename('القاهرة','Kairo','Cairo','Cairo',false) as name;
-       --> "Kairo"
+      -->	Kairo
+		القاهرة
 select osml10n_get_placename('Brixen Bressanone','Brixen',NULL,NULL,false) as name;
-       --> "Brixen"
+      -->	Brixen Bressanone
+select osml10n_get_placename('Roma','Rom',NULL,NULL,false) as name;
+      -->	Rom
+		Roma
 select osml10n_get_streetname('Doktor-No-Straße',NULL,NULL,NULL,false) as name;
-       --> "Dr.-No-Str."
+      -->	Dr.-No-Str.
 select osml10n_get_streetname('Dr. No Street','Professor-Doktor-No-Straße',NULL,NULL,false) as name;
-       --> "Prof.-Dr.-No-Str. (Dr. No St.)"
+      -->	Prof.-Dr.-No-Str. - Dr. No St.
 select osml10n_get_name_without_brackets('Dr. No Street','Doktor-No-Straße',NULL,NULL) as name;
-       --> "Doktor-No-Straße"       
-select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,'Vozdvizhenka Street',true,'de') as name;
-       --> "ул. Воздвиженка (Vozdvizhenka St.)"
-select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,NULL,true,'de') as name;
-       --> "ул. Воздвиженка (ul. Vozdviženka)"
-select osml10n_get_streetname('вулиця Молока',NULL,NULL,NULL,true,'de') as name;
-       --> "вул. Молока (vul. Moloka)"
+      -->	Doktor-No-Straße
+select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,'Vozdvizhenka Street',true,true,' ','de') as name;
+      -->	ул. Воздвиженка (Vozdvizhenka St.)
+select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,NULL,true,true,' ','de') as name;
+      -->	ул. Воздвиженка (ul. Vozdviženka)
+select osml10n_get_streetname('вулиця Молока',NULL,NULL,NULL,true,false,' - ','de') as name;
+      -->	вул. Молока - vul. Moloka
 ```
 
 #### Using hstore column containing all name tags from Openstreetmap
 ```
 select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Moskau","name:en"=>"Moscow"',true) as name;
-      ---> "Москва́ (Moskau)"
+       -->	Москва́
+		Moskau
 select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Moskau","name:en"=>"Moscow"',false) as name;
-      ---> "Moskau (Москва́)"
-select osml10n_get_placename_from_tags('"name"=>"القاهرة","name:de"=>"Kairo","int_name"=>"Cairo","name:en"=>"Cairo"',true) as name;
-       --> "Kairo"
+       -->	Moskau
+		Москва́
+select osml10n_get_placename_from_tags('"name"=>"القاهرة","name:de"=>"Kairo","int_name"=>"Cairo","name:en"=>"Cairo"',false) as name;
+       -->	Kairo
+		القاهرة
 select osml10n_get_placename_from_tags('"name"=>"Brixen Bressanone","name:de"=>"Brixen"',false) as name;
-       --> "Brixen" 
+       -->	Brixen Bressanone
+select osml10n_get_placename_from_tags('"name"=>"Roma","name:de"=>"Rom"',false) as name;
+       -->	Rom
+		Roma
 select osml10n_get_streetname_from_tags('"name"=>"Doktor-No-Straße"',false) as name;
-       --> "Dr.-No-Str." 
+       -->	Dr.-No-Str.
 select osml10n_get_streetname_from_tags('"name"=>"Dr. No Street","name:de"=>"Professor-Doktor-No-Straße"',false) as name;
-       --> "Prof.-Dr.-No-Str. (Dr. No St.)"    
-select osml10n_get_name_without_brackets_from_tags('"name"=>"Dr. No Street","name:de"=>"Doktor-No-Straße") as name;
-       --> "Doktor-No-Straße"        
-select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true) as name;
-       --> "ул. Воздвиженка (Vozdvizhenka St.)" 
-select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка"',true) as name;
-       --> "ул. Воздвиженка (ul. Vozdviženka)" 
-select osml10n_get_streetname_from_tags('"name"=>"вулиця Молока"',true) as name;
-       --> "вул. Молока (vul. Moloka)" 
-select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',true) as name;
-       --> "Juchon"
+       -->	Prof.-Dr.-No-Str. - Dr. No St.
+select osml10n_get_name_without_brackets_from_tags('"name"=>"Dr. No Street","name:de"=>"Doktor-No-Straße"') as name;
+       -->	Doktor-No-Straße
+select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de') as name;
+       -->	ул. Воздвиженка (Vozdvizhenka St.)
+select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка"',true,true,' ','de') as name;
+       -->	ул. Воздвиженка (ul. Vozdviženka)
+select osml10n_get_streetname_from_tags('"name"=>"вулиця Молока"',true,false,' - ','de') as name;
+       -->	вул. Молока - vul. Moloka
+select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false) as name;
+       -->	주촌  Juchon
+select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false) as name;
+       -->	Juchon
+		J주촌
+select osml10n_get_country_name('"ISO3166-1:alpha2"=>"IN","name:de"=>"Indien","name:hi"=>"भारत","name:en"=>"India"') as name;
+       -->	Indien
+		भारत
+		India
 ```

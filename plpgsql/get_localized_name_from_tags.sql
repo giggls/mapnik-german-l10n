@@ -28,7 +28,13 @@ osml10n_get_streetname_from_tags
 osml10n_get_name_without_brackets_from_tags
 
 */
-CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, 
+                                                           loc_in_brackets boolean,
+                                                           show_brackets boolean DEFAULT false,
+                                                           separator text DEFAULT chr(10),
+                                                           targetlang text DEFAULT 'de',
+                                                           place geometry DEFAULT NULL
+                                                           ) RETURNS TEXT AS $$
  DECLARE
   -- 5 most commonly spoken languages using latin script (hopefully)   
   latin_langs text[] := '{"en","fr","es","pt","de"}';
@@ -38,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, loc_in_b
  BEGIN
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
-     return osml10n_gen_bracketed_name(tags->target_tag,tags->'name',loc_in_brackets);
+     return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator);
    END IF;
    IF tags ? 'name' THEN
      if (tags->'name' = '') THEN
@@ -51,7 +57,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, loc_in_b
      -- these are currently int_name, common latin scripts and romanized version of the name
      IF tags ? 'int_name' THEN
        if osml10n_is_latin(tags->'int_name') THEN
-         return osml10n_gen_bracketed_name(tags->'int_name',tags->'name',loc_in_brackets);
+         return osml10n_gen_combined_name(tags->'int_name',tags->'name',loc_in_brackets,show_brackets,separator);
        END IF;
      END IF;
      
@@ -65,7 +71,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, loc_in_b
        target_tag := 'name:' || lang;
        if tags ? target_tag THEN
          -- raise notice 'found roman language tag %', target_tag;
-         return osml10n_gen_bracketed_name(tags->target_tag,tags->'name',loc_in_brackets);
+         return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator);
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
@@ -77,11 +83,11 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, loc_in_b
      LOOP
        IF (tag ~ '^name:.+_rm$') THEN
          -- raise notice 'found romanization name tag %', tag;
-         return osml10n_gen_bracketed_name(tags->tag,tags->'name',loc_in_brackets);
+         return osml10n_gen_combined_name(tags->tag,tags->'name',loc_in_brackets,show_brackets,separator);
        END IF;
      END LOOP;
      -- raise notice 'last resort: doing transliteration';
-     return osml10n_gen_bracketed_name(osml10n_geo_translit(tags->'name',place),tags->'name',loc_in_brackets);      
+     return osml10n_gen_combined_name(osml10n_geo_translit(tags->'name',place),tags->'name',loc_in_brackets,false,separator);
    ELSE
      return NULL;
    END IF;
@@ -93,7 +99,12 @@ $$ LANGUAGE 'plpgsql' STABLE;
 Same as osml10n_get_placename_from_tags but with streetname abbreviations
 
 */
-CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
+                                                            loc_in_brackets boolean,
+                                                            show_brackets boolean DEFAULT false,
+                                                            separator text DEFAULT ' - ',
+                                                            targetlang text DEFAULT 'de',
+                                                            place geometry DEFAULT NULL) RETURNS TEXT AS $$
  DECLARE
   -- 5 most commonly spoken languages using latin script (hopefully)   
   latin_langs text[] := '{"en","fr","es","pt","de"}';
@@ -104,8 +115,8 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, loc_in_
  BEGIN
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
-     return osml10n_gen_bracketed_name(osml10n_street_abbrev(tags->target_tag,targetlang),
-                                       osml10n_street_abbrev_all(tags->'name'),loc_in_brackets);
+     return osml10n_gen_combined_name(osml10n_street_abbrev(tags->target_tag,targetlang),
+                                       osml10n_street_abbrev_all(tags->'name'),loc_in_brackets,show_brackets,separator);
    END IF;
    IF tags ? 'name' THEN
      if (tags->'name' = '') THEN
@@ -118,8 +129,8 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, loc_in_
      -- these are currently int_name, common latin scripts and romanized version of the name
      IF tags ? 'int_name' THEN
        if osml10n_is_latin(tags->'int_name') THEN
-         return osml10n_gen_bracketed_name(osml10n_street_abbrev_en(tags->'int_name'),
-                                           osml10n_street_abbrev_all(tags->'name'),loc_in_brackets);
+         return osml10n_gen_combined_name(osml10n_street_abbrev_en(tags->'int_name'),
+                                           osml10n_street_abbrev_all(tags->'name'),loc_in_brackets,show_brackets,separator);
        END IF;
      END IF;
      
@@ -133,8 +144,8 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, loc_in_
        target_tag := 'name:' || lang;
        if tags ? target_tag THEN
          -- raise notice 'found roman language tag %', target_tag;
-         return osml10n_gen_bracketed_name(osml10n_street_abbrev(tags->target_tag,lang),
-                                           osml10n_street_abbrev_all(tags->'name'),loc_in_brackets);
+         return osml10n_gen_combined_name(osml10n_street_abbrev(tags->target_tag,lang),
+                                           osml10n_street_abbrev_all(tags->'name'),loc_in_brackets,show_brackets,separator);
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
@@ -146,13 +157,13 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, loc_in_
      LOOP
        IF (tag ~ '^name:.+_rm$') THEN
          -- raise notice 'found romanization name tag %', tag;
-         return osml10n_gen_bracketed_name(osml10n_street_abbrev_all_latin(tags->tag),
-                                           osml10n_street_abbrev_non_latin(tags->'name'),loc_in_brackets);
+         return osml10n_gen_combined_name(osml10n_street_abbrev_all_latin(tags->tag),
+                                           osml10n_street_abbrev_non_latin(tags->'name'),loc_in_brackets,show_brackets,separator);
        END IF;
      END LOOP;
      -- raise notice 'last resort: doing transliteration';
      abbrev = osml10n_street_abbrev_non_latin(tags->'name');
-     return osml10n_gen_bracketed_name(osml10n_geo_translit(abbrev,place),abbrev,loc_in_brackets);
+     return osml10n_gen_combined_name(osml10n_geo_translit(abbrev,place),abbrev,loc_in_brackets,show_brackets,separator);
    ELSE
      return NULL;
    END IF;
