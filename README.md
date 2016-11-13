@@ -24,24 +24,28 @@ CREATE EXTENSION osml10n;
 ### API
 The following functions are provided for use in map rendering:
 
-__`osml10n_get_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry DEFAULT NULL)`__
+__`osml10n_get_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT chr(10), place geometry DEFAULT NULL)`__
 :	Will try its best to return a usable name pair with name in brackets (or vise versa if loc_in_brackets is set)
 
-__`osml10n_get_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, langcode text DEFAULT 'de', place geometry DEFAULT NULL)`__
+__`osml10n_get_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, how_brackets boolean DEFAULT false, separator text DEFAULT ' - ', langcode text DEFAULT 'de', place geometry DEFAULT NULL)`__
 :	Same as get_localized_placename, but with some common abbreviations for street names (Straße->Str.), if name ist longer than 15 characters
 
 __`osml10n_get_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL)`__
 :	Same as get_localized_placename, but with no names in brackets
 
-__`osml10n_get_placename_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
+__`osml10n_get_placename_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT chr(10), targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
 :	Same as osml10n_get_placename but with hstore column input
 
 
-__`osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
+__`osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT ' - ', targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
 :	Same as osml10n_get_streetname but with hstore column input
 
 __`osml10n_get_name_without_brackets_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
 :	Same as osml10n_get_placename but with hstore column input
+
+__`osml10n_get_name_without_brackets_from_tags(tags hstore, separator text DEFAULT chr(10), targetlang text DEFAULT 'de')`__
+:	Generate a combined country name from name:xx tags (targetlang plus official languages of the country)
+
 
 A convinient way of using these functions is to hide them behind a virtual colums using database views.
 
