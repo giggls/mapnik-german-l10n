@@ -14,3 +14,4 @@ debian/postgresql-*-osml10n*
 osml10n--*.sql
 osml10n.control
 debian/files
+country_languages.data

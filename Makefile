@@ -9,7 +9,7 @@ SUBDIRS = kanjitranscript icutranslit
 CLEANDIRS = $(SUBDIRS:%=clean-%)
 INSTALLDIRS = $(SUBDIRS:%=install-%)
 
-all: $(patsubst %.md,%.html,$(wildcard *.md)) INSTALL README Makefile $(SUBDIRS) osml10n.control
+all: $(patsubst %.md,%.html,$(wildcard *.md)) INSTALL README Makefile $(SUBDIRS) osml10n.control country_languages.data  osml10n_country_osm_grid.data
 
 INSTALL: INSTALL.md
 	pandoc --from markdown_github --to plain --standalone $< --output $@
@@ -31,7 +31,7 @@ $(SUBDIRS):
 # I have no idea how to use the Makefile from "pg_config --pgxs"
 # for installation without interfering mine
 # so will do it manually (fo now)
-install: $(INSTALLDIRS) all
+install: $(INSTALLDIRS) all 
 	mkdir -p $(TMPTARGET)$(EXTDIR)/extension
 	install -D -c -m 644 osml10n--$(EXTVERSION).sql $(TMPTARGET)$(EXTDIR)/extension/
 	install -D -c -m 644 osml10n.control $(TMPTARGET)$(EXTDIR)/extension/
@@ -61,4 +61,4 @@ osml10n.control: osml10n--$(EXTVERSION).sql
 	sed -e "s/VERSION/$(EXTVERSION)/g" osml10n.control.in >osml10n.control
 
 country_languages.data:
-	./gen_country_languages_table.py >country_languages.data
+	grep -v \# country_languages.data.in >country_languages.data

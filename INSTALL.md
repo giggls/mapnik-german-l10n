@@ -46,6 +46,7 @@ put it inside your build directory.
 CREATE EXTENSION postgis;
 CREATE EXTENSION hstore;
 CREATE EXTENSION unaccent;
+CREATE EXTENSION fuzzystrmatch;
 CREATE EXTENSION osml10n;
 ```
 

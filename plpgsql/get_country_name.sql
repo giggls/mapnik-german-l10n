@@ -29,6 +29,10 @@ CREATE or REPLACE FUNCTION osml10n_get_country_name(tags hstore, separator text 
   tag text;
   offlangs text[];
   lang text;
+  ldistmin int=1;
+  ldist int;
+  ldistall int;
+  str text;
  BEGIN
   -- First add the name in our target language
   tag := 'name:' || targetlang;
@@ -42,8 +46,27 @@ CREATE or REPLACE FUNCTION osml10n_get_country_name(tags hstore, separator text 
     FOREACH lang IN ARRAY offlangs
     LOOP
        tag := 'name:' || lang;
+       -- raise notice 'tag: %->%',tag,tags->tag;
        IF tags ? tag THEN
-         IF NOT (tags->tag) = ANY(names::text[]) THEN
+         -- raise notice 'vorhanden';
+         -- only append string if levenshtein distance is > ldistmin
+         IF names IS NOT NULL THEN
+           -- make shure that ldistall is always bigger than ldistmin by default
+           ldistall=ldistmin+1;
+           FOREACH str IN ARRAY names
+           LOOP
+             -- raise notice 'loop: % %',str,tags->tag;
+             ldist=levenshtein(str,tags->tag);
+             if (ldistall > ldist) THEN
+               ldistall=ldist;
+             END IF;
+             -- raise notice 'ldistall: %',ldistall;
+           END LOOP;
+           if (ldistall > ldistmin) THEN
+             names=array_append(names,tags->tag);
+           END IF;
+         ELSE
+           -- raise notice 'names NULL: %',tag;
            names=array_append(names,tags->tag);
          END IF;
        END IF;

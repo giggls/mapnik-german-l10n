@@ -1,3 +1,20 @@
+# Initially this table is derived from
+# http://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
+# using gen_country_languages_table.py
+#
+# However it needed to get adapted for map rendering purposes!
+# This means, that more than three additional languages are not
+# feasible to use.
+#
+# So the following changes have been made:
+# * Remove regional only languages (e.g. in Italy, Spain and UK)
+# * Remove anything but the 3 most important languages
+# In some special cases we had to decide for legibility and
+# against political correctness
+#
+# If you think the rendering for a specific country is not appropriate
+# please file a bug with a better suggestion on github
+#
 ad	{ca}
 ae	{ar}
 af	{fa,ps}
@@ -55,17 +72,17 @@ cx	{en}
 cy	{el,tr}
 cz	{cs}
 de	{de}
-dj	{fr,ar,so}
+dj	{fr,ar}
 dk	{da}
 dm	{en}
 do	{es}
-dz	{ar}
+dz	{ar,ber}
 ec	{es}
 ee	{et}
 eg	{ar}
 eh	{ar,es,fr}
 er	{ti,ar,en}
-es	{ast,ca,es,eu,gl}
+es	{es}
 et	{am,om}
 fi	{fi,sv,se}
 fj	{en}
@@ -74,7 +91,7 @@ fm	{en}
 fo	{fo}
 fr	{fr}
 ga	{fr}
-gb	{en,ga,cy,gd,kw}
+gb	{en}
 gd	{en}
 ge	{ka}
 gf	{fr}
@@ -85,7 +102,7 @@ gl	{kl,da}
 gm	{en}
 gn	{fr}
 gp	{fr}
-gq	{es,fr,pt}
+gq	{es}
 gr	{el}
 gs	{en}
 gt	{es}
@@ -107,7 +124,7 @@ io	{en}
 iq	{ar,ku}
 ir	{fa}
 is	{is}
-it	{it,de,fr}
+it	{it}
 je	{en}
 jm	{en}
 jo	{ar}
@@ -116,10 +133,10 @@ ke	{sw,en}
 kg	{ky,ru}
 kh	{km}
 ki	{en}
-km	{ar,fr}
+km	{bnt,ar,fr}
 kn	{en}
 kp	{ko}
-kr	{ko,en}
+kr	{ko}
 kw	{ar}
 ky	{en}
 kz	{kk,ru}
@@ -133,11 +150,11 @@ ls	{en,st}
 lt	{lt}
 lu	{lb,fr,de}
 lv	{lv}
-ly	{ar}
-ma	{ar}
+ly	{ar,ber}
+ma	{ar,ber}
 mc	{fr}
 md	{ru,uk,ro}
-me	{srp,sq,bs,hr,sr}
+me	{sr,sh}
 mf	{fr}
 mg	{mg,fr}
 mh	{en,mh}
@@ -164,7 +181,7 @@ nf	{en,pih}
 ng	{en}
 ni	{es}
 nl	{nl}
-no	{nb,nn,no,se}
+no	{nb,nn,no}
 np	{ne}
 nr	{na,en}
 nu	{niu,en}
@@ -244,6 +261,6 @@ wf	{fr}
 ws	{sm,en}
 ye	{ar}
 yt	{fr}
-za	{zu,xh,af,st,tn,en}
+za	{af,zu,xh}
 zm	{en}
 zw	{en,sn,nd}
