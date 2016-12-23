@@ -1,10 +1,10 @@
-osml10n (2.2.0pre) unstable; urgency=medium
+osml10n (2.2.0) unstable; urgency=medium
 
   * rethink generation of combined names:
     putting them in () will not work well in bidi text
     thus we will not use them anymore
-  * generate country name from name:xx tags rather than the generic name
-    tags
+  * generate country name from name:xx tags and a lot of magic
+    rather than the generic name tags
 
  -- Sven Geggus <sven-debian@geggus.net>  Sun, 30 Oct 2016 13:56:52 +0100
 
