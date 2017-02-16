@@ -1,3 +1,11 @@
+osml10n (2.2.1) unstable; urgency=medium
+
+  * Add requires to osml10n.control.in.
+    Starting from PostgreSQL 9.6 this will allow for automatic
+    installation of the other extensions this code is dependent on.
+
+ -- Sven Geggus <sven-deb@geggus.net>  Thu, 16 Feb 2017 14:25:19 +0100
+
 osml10n (2.2.0) unstable; urgency=medium
 
   * rethink generation of combined names:
