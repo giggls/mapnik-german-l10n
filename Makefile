@@ -32,10 +32,10 @@ $(SUBDIRS):
 # for installation without interfering mine
 # so will do it manually (fo now)
 install: $(INSTALLDIRS) all 
-	mkdir -p $(TMPTARGET)$(EXTDIR)/extension
-	install -D -c -m 644 osml10n--$(EXTVERSION).sql $(TMPTARGET)$(EXTDIR)/extension/
-	install -D -c -m 644 osml10n.control $(TMPTARGET)$(EXTDIR)/extension/
-	install -D -c -m 644 *.data $(TMPTARGET)$(EXTDIR)/extension/
+	mkdir -p $(DESTDIR)$(EXTDIR)/extension
+	install -D -c -m 644 osml10n--$(EXTVERSION).sql $(DESTDIR)$(EXTDIR)/extension/
+	install -D -c -m 644 osml10n.control $(DESTDIR)$(EXTDIR)/extension/
+	install -D -c -m 644 *.data $(DESTDIR)$(EXTDIR)/extension/
 
 $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install

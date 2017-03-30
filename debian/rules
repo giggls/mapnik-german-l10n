@@ -22,7 +22,7 @@ override_dh_auto_configure: gencontrol
 	dh_auto_configure
 
 override_dh_auto_install:
-	make TMPTARGET=$(PWD)/debian/postgresql-`pg_buildext supported-versions $(CURDIR) | tail -1`-osml10n install
+	make DESTDIR=$(PWD)/debian/postgresql-`pg_buildext supported-versions $(CURDIR) | tail -1`-osml10n install
 
 override_dh_clean:
 	dh_clean

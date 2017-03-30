@@ -16,7 +16,7 @@ osml10n_translit.so: osml10n_translit.o
 	$(CXX) -shared -o $@ $< $(LIBS)
 
 install: osml10n_translit.so
-	install -D -m 644 osml10n_translit.so $(TMPTARGET)$(shell pg_config --pkglibdir)/osml10n_translit.so
+	install -D -m 644 osml10n_translit.so $(DESTDIR)$(shell pg_config --pkglibdir)/osml10n_translit.so
 	
 clean:
 	rm -f *.o *.so
