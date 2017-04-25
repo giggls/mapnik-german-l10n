@@ -8,13 +8,15 @@ if [ $# -ne 2 ]; then
 fi
 
 if ! [ -f country_osm_grid.sql ]; then
-  echo "Trying to download country_osm_grid.sql from github!"
-  wget -q https://github.com/twain47/Nominatim/raw/master/data/country_osm_grid.sql
+  echo -n "Trying to download country_grid.sql.gz from nominatim.org... "
+  curl -s http://www.nominatim.org/data/country_grid.sql.gz |gzip -d >country_osm_grid.sql
 fi
 
 if ! [ -f country_osm_grid.sql ]; then
-  echo "Unable do download country_osm_grid.sql from github :)" 2>&1
+  echo "failed."
   exit 1
+else
+  echo "done."
 fi
 
 SCRIPTS=plpgsql/*
