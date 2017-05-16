@@ -1,5 +1,5 @@
 #  OSM map l10n functions
-##(from german mapnik style)
+## (from german mapnik style)
 
 All l10n functions from german mapnik style are implemented as PL/pgSQL stored procedures
 and are therefore usable in a renderer independent way.
