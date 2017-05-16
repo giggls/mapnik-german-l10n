@@ -43,7 +43,7 @@ __`osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, show_b
 __`osml10n_get_name_without_brackets_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
 :	Same as osml10n_get_placename but with hstore column input
 
-__`osml10n_get_name_without_brackets_from_tags(tags hstore, separator text DEFAULT chr(10), targetlang text DEFAULT 'de')`__
+__`osml10n_get_country_name(tags hstore, separator text DEFAULT chr(10), targetlang text DEFAULT 'de')`__
 :	Generate a combined country name from name:xx tags (targetlang plus official languages of the country)
 
 
