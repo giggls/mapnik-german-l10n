@@ -47,7 +47,7 @@ __`osml10n_get_country_name(tags hstore, separator text DEFAULT chr(10), targetl
 :	Generate a combined country name from name:xx tags (targetlang plus official languages of the country)
 
 
-A convinient way of using these functions is to hide them behind a virtual colums using database views.
+A convinient way of using these functions is to hide them behind virtual colums using database views.
 
 ### Examples
 
