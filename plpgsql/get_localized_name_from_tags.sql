@@ -44,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
  BEGIN
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
-     return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator);
+     return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator,tags);
    END IF;
    IF tags ? 'name' THEN
      if (tags->'name' = '') THEN

@@ -51,14 +51,20 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "osml10n_gen_combined_name"
-   Will create a name+local_name pair       
+   Will create a name+local_name pair
+   
+   In case tags are given the combination night be re-created manually
+   from a name:xx tag using the requested separator
+   
 */       
-CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text, loc_in_brackets boolean, show_brackets boolean DEFAULT true, separator text DEFAULT ' ') RETURNS TEXT AS $combined$
+CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text, loc_in_brackets boolean, show_brackets boolean DEFAULT true, separator text DEFAULT ' ', tags hstore DEFAULT NULL) RETURNS TEXT AS $combined$
  DECLARE
    nobrackets boolean;
    regex text;
    unacc text;
    unacc_local text;
+   unacc2 text;
+   tag text;
  BEGIN
   IF (name is NULL) THEN
    return local_name;
@@ -68,9 +74,23 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
      combined name is a good idea.
   
      Currently we do the following:
+     If tags is NULL:
      If local_name is part of name as a single word, not just as a substring
      we return name and discard local_name.
      Otherwise we return a combined name with name and local_name
+     
+     If tags is not NULL:
+     If local_name is part of name as a single word, not just as a substring
+     we try to extract a second valid name (defined in "name:*" as a single word)
+     from "name". If succeeeded we redefine name and also return a combined name.
+     
+     This is useful in bilingual areas where name usually contains two langages.
+     E.g.: name=>"Bolzano - Bozen", target language="de" would be rendered as:
+     
+     Bozen
+     Bolzano
+     
+     
   */
   unacc = unaccent(name);
   unacc_local = unaccent(local_name);
@@ -81,7 +101,27 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
     regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc_local, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
     -- raise notice 'regex: %',regex;
     IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
-      nobrackets=true;
+      /* try to create a better string for name */
+      IF tags IS NULL THEN
+        nobrackets=true;
+      ELSE
+        FOREACH tag IN ARRAY akeys(tags)
+        LOOP
+          IF (tag ~ '^name:.+$') THEN
+            IF (tags->tag != unacc_local) THEN
+              unacc2 = unaccent(tags->tag);
+              regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc2, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
+              IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
+                -- raise notice 'using % (%) as second name', tags->tag, tag;
+                name = tags->tag;
+                EXIT;
+              ELSE
+                nobrackets=true;
+              END IF;
+            END IF;
+          END IF;
+        END LOOP;
+      END IF;
     END IF;
   END IF;
   
