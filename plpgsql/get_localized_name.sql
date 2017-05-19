@@ -116,7 +116,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
             IF (unacc2 != unacc_local) THEN
               regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc2, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
               IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
-                raise notice 'using % (%) as second name', tags->tag, tag;
+                -- raise notice 'using % (%) as second name', tags->tag, tag;
                 name = tags->tag;
                 EXIT;
               ELSE
