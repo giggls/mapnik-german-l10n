@@ -102,6 +102,10 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
     -- raise notice 'regex: %',regex;
     IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
       /* try to create a better string for name */
+      /* do complex checks only in case name != local_name*/
+      if (char_length(unacc_local) = char_length(unacc)) THEN
+        return name;
+      END IF;
       IF tags IS NULL THEN
         nobrackets=true;
       ELSE
