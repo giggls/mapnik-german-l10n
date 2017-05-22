@@ -118,6 +118,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
               IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
                 -- raise notice 'using % (%) as second name', tags->tag, tag;
                 name = tags->tag;
+                nobrackets=false;
                 EXIT;
               ELSE
                 nobrackets=true;
