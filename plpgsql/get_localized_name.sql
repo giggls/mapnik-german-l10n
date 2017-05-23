@@ -116,10 +116,15 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
             IF (unacc2 != unacc_local) THEN
               regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc2, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
               IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
-                -- raise notice 'using % (%) as second name', tags->tag, tag;
-                name = tags->tag;
-                nobrackets=false;
-                EXIT;
+                /* As this regex is also true for 1:1 match we need to ignore this special case */
+                if (unacc != unacc2) THEN
+                  -- raise notice 'using % (%) as second name', tags->tag, tag;
+                  name = tags->tag;
+                  nobrackets=false;
+                  EXIT;
+                ELSE
+                  nobrackets=true;
+                END IF;
               ELSE
                 nobrackets=true;
               END IF;
