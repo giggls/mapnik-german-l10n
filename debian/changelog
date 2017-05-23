@@ -1,3 +1,9 @@
+osml10n (2.2.5) unstable; urgency=medium
+
+  * Yet another special case for bilingual name code
+
+ -- Sven Geggus <sven-debian@geggus.net>  Tue, 23 May 2017 13:41:59 +0200
+
 osml10n (2.2.4) unstable; urgency=medium
 
   * Another fix for bilingual name code
