@@ -60,6 +60,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text, loc_in_brackets boolean, show_brackets boolean DEFAULT true, separator text DEFAULT ' ', tags hstore DEFAULT NULL) RETURNS TEXT AS $combined$
  DECLARE
    nobrackets boolean;
+   found boolean;
    regex text;
    unacc text;
    unacc_local text;
@@ -93,6 +94,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
   */
   unacc = unaccent(name);
   unacc_local = unaccent(local_name);
+  found = false;
   if (position(unacc_local in unacc) >0) THEN
     /* the regexp_replace function below is a quotemeta equivalent 
        http://stackoverflow.com/questions/11442090/implementing-quotemeta-q-e-in-tcl/11442113
@@ -119,6 +121,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
                   -- raise notice 'using % (%) as second name', tags->tag, tag;
                   name = tags->tag;
                   nobrackets=false;
+                  found=true;
                   EXIT;
                 ELSE
                   nobrackets=true;
@@ -129,6 +132,10 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
             END IF;
           END IF;
         END LOOP;
+        /* consider other names than local_name crap in case we did not find any */
+        IF not found THEN
+          return local_name;
+        END IF;
       END IF;
     END IF;
   END IF;

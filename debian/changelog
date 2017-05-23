@@ -1,3 +1,9 @@
+osml10n (2.2.6) unstable; urgency=medium
+
+  * add workaround for crap names like "foo - foo"
+
+ -- Sven Geggus <sven-debian@geggus.net>  Tue, 23 May 2017 17:23:42 +0200
+
 osml10n (2.2.5) unstable; urgency=medium
 
   * Yet another special case for bilingual name code
