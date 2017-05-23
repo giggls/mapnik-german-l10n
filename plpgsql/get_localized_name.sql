@@ -63,7 +63,6 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
    regex text;
    unacc text;
    unacc_local text;
-   unacc2 text;
    tag text;
  BEGIN
   IF (name is NULL) THEN
@@ -101,8 +100,8 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
     regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc_local, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
     -- raise notice 'regex: %',regex;
     IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
-      /* try to create a better string for name */
-      /* do complex checks only in case name != local_name*/
+      /* try to create a better string for combined name than plain name */
+      /* do these complex checks only in case unaccented name != unaccented local_name */
       if (char_length(unacc_local) = char_length(unacc)) THEN
         return name;
       END IF;
@@ -112,12 +111,11 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
         FOREACH tag IN ARRAY akeys(tags)
         LOOP
           IF (tag ~ '^name:.+$') THEN
-            unacc2 = unaccent(tags->tag);
-            IF (unacc2 != unacc_local) THEN
-              regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc2, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
-              IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
+            IF ((tags->tag) != local_name) THEN
+              regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(tags->tag, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
+              IF regexp_matches(concat(' ',name,' '),regex) IS NOT NULL THEN
                 /* As this regex is also true for 1:1 match we need to ignore this special case */
-                if (unacc != unacc2) THEN
+                if (name != (tags->tag)) THEN
                   -- raise notice 'using % (%) as second name', tags->tag, tag;
                   name = tags->tag;
                   nobrackets=false;
