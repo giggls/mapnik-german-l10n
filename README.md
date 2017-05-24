@@ -8,8 +8,8 @@ For this reason they are now hosted in their own repository.
 
 Currently the code consists of three parts:
 
-1. An "Any-Latin" transliterate funtion using libicu
-2. A japanese kanji transliterate funtion using libkakasi
+1. An "Any-Latin" transliterate function using libicu
+2. A japanese kanji transliterate function using libkakasi
 3. A couple of PL/pgSQL functions which can be used to generate labels for
    map rendering.
 
