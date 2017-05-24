@@ -8,7 +8,9 @@ Get the name tag which is the most appropriate one for a german map
 
 This can be used for any language using latin script.
 
-get_localized_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean)
+This code will also need get_country.sql and geo_transliterate.sql to work properly
+
+get_localized_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry)
  returns "local_name (name)" if local_name exists and name consists of latin, greek or cyrillic characters
  returns "local_name"        if local_name exists and name does not consist of latin, greek or cyrillic characters
  returns "name"              if "name" consists of latin characters
@@ -18,17 +20,17 @@ get_localized_placename(name text, local_name text, int_name text, name_en text,
  if "local_name" is part of "name", this function returns only "local_name" 
  
  loc_in_brackets decides, which part of name_loc/name is in brackets
+ place is an optional parameter for geolocation aware transliteration (in osm2pgsql databases use way here)
 
-
-get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean)
+get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry)
  same as get_localized_placename, but with some common abbreviations 
  for german street names (Straße->Str.), if name ist longer than 15 characters
 
 
-get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text)
+get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry)
  same as get_localized_placename, but with no names in brackets
  
-get_latin_name(name text, local_name text, int_name text, name_en text)
+get_latin_name(name text, local_name text, int_name text, name_en text, place geometry)
  returns name, if name is latin
  if not, returns local_name, name_en, name_int, last choice is a transliteration of name
  
@@ -51,7 +53,7 @@ select get_localized_streetname('Dr. No Street','Professor-Doktor-No-Straße',NU
 select get_localized_name_without_brackets('Dr. No Street','Doktor-No-Straße',NULL,NULL) as name;
        --> "Doktor-No-Straße"       
 
-(c) 2014 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de> public domain
+(c) 2014-2016 Sven Geggus <svn-osm@geggus.net>, Max Berger <max@dianacht.de> public domain
 */
 
 
@@ -67,7 +69,7 @@ CREATE or REPLACE FUNCTION is_latin(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 /* helper function "is_latinorgreek" checks if string consists of latin, greek or cyrillic characters only */
@@ -82,8 +84,25 @@ CREATE or REPLACE FUNCTION is_latinorgreek(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
+/* helper function "contains_cjk" checks if string contains CJK characters
+0x4e00-0x9FFF in unicode table
+*/
+CREATE or REPLACE FUNCTION contains_cjk(text) RETURNS BOOLEAN AS $$
+  DECLARE
+    i integer;
+    c integer;
+  BEGIN
+    FOR i IN 1..char_length($1) LOOP
+      c = ascii(substr($1, i, 1));
+      IF ((c > 19967) AND (c < 40960)) THEN
+        RETURN true;
+      END IF;
+    END LOOP;
+    RETURN false;
+  END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* helper function "street_abbreviation" replaces some common parts of german street names */
 /* with their abbr, if length(name) is over 16                                      */
@@ -127,11 +146,11 @@ CREATE or REPLACE FUNCTION street_abbreviation(text) RETURNS TEXT AS $$
   END IF;
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 
 
-CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   BEGIN
     IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
@@ -146,7 +165,7 @@ CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, i
           IF is_latin(name) THEN
             return name;
           ELSE
-            return transliterate(name); 
+            return geo_transliterate(name,place); 
           END IF;
 	  return name;
 	ELSE
@@ -199,11 +218,11 @@ CREATE or REPLACE FUNCTION get_localized_placename(name text, local_name text, i
       END IF;
     END IF;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
 
 
-CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   BEGIN
     IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
@@ -218,7 +237,7 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
           IF is_latin(name) THEN
             return street_abbreviation(name);
           ELSE
-            return transliterate(name); 
+            return geo_transliterate(name,place); 
           END IF;
 	  return name;
 	ELSE
@@ -271,10 +290,10 @@ CREATE or REPLACE FUNCTION get_localized_streetname(name text, local_name text, 
       END IF;
     END IF;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
 
-CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   BEGIN
     IF (local_name is NULL) THEN
       IF (int_name is NULL) THEN
@@ -289,7 +308,7 @@ CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_
           IF is_latin(name) THEN
             return name;
           ELSE
-            return transliterate(name);
+            return geo_transliterate(name,place);
           END IF;
 	  return name;
 	ELSE
@@ -318,11 +337,11 @@ CREATE or REPLACE FUNCTION get_localized_name_without_brackets(name text, local_
       return local_name;
     END IF;
   END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 
 
 
-CREATE or REPLACE FUNCTION get_latin_name(name text, local_name text, int_name text, name_en text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION get_latin_name(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
  BEGIN
   IF (name is not NULL) and (name !='') and (is_latin(name)) THEN
    return name;
@@ -331,7 +350,7 @@ CREATE or REPLACE FUNCTION get_latin_name(name text, local_name text, int_name t
     IF (int_name is NULL) THEN
      IF (name_en is NULL) THEN
       IF (name is not NULL) and (name !='') THEN
-       return transliterate(name); 
+       return geo_transliterate(name,place); 
       ELSE
        return NULL;
       END IF;
@@ -346,5 +365,5 @@ CREATE or REPLACE FUNCTION get_latin_name(name text, local_name text, int_name t
    END IF;
   END IF;
  END;
-$$ LANGUAGE 'plpgsql';
+$$ LANGUAGE 'plpgsql' STABLE;
 

@@ -4,3 +4,5 @@
 *.tar.gz
 *_*.changes
 *.deb
+README.html
+INSTALL.html
