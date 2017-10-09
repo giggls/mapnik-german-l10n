@@ -7,11 +7,11 @@ Build-Depends: debhelper (>= 8.0.0), libicu-dev,
  wget, libkakasi2-dev, libutf8proc-dev, pandoc
 Standards-Version: 3.9.2
 
-Package: postgresql-9.4-osml10n
+Package: postgresql-10-osml10n
 Architecture: any
-Conflicts: postgresql-9.4-utf8translit,
- utf8translit-9.4, postgresql-9.4-kanjitranslit
-Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-9.4
+Conflicts: postgresql-10-utf8translit,
+ utf8translit-10, postgresql-10-kanjitranslit
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-10
 Description: l10n package for generation of OSM based maps from PostGIS
  localisation package  for generation of OSM based maps from PostGIS.
  This is currently used in german mapnik style but can be used in a
