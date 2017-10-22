@@ -3,14 +3,13 @@ Section: misc
 Priority: extra
 Maintainer: Sven Geggus <sven-osm@geggus.net>
 Build-Depends: debhelper (>= 8.0.0), libicu-dev,
- postgresql-server-dev-all, postgresql-server-dev-9.4 | postgresql-server-dev-9.5,
+ postgresql-server-dev-all,
+ postgresql-server-dev-9.4 | postgresql-server-dev-9.5 | postgresql-server-dev-10,
  wget, libkakasi2-dev, libutf8proc-dev, pandoc
 Standards-Version: 3.9.2
 
 Package: postgresql-PGVERSION-osml10n
 Architecture: any
-Conflicts: postgresql-PGVERSION-utf8translit,
- utf8translit-PGVERSION, postgresql-PGVERSION-kanjitranslit
 Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-PGVERSION
 Description: l10n package for generation of OSM based maps from PostGIS
  localisation package  for generation of OSM based maps from PostGIS.

@@ -4,7 +4,7 @@ used in german mapnik style available at
 
 https://github.com/giggls/openstreetmap-carto-de
 
-(c) 2016 Sven Geggus <svn-osm@geggus.net>
+(c) 2016-2017 Sven Geggus <svn-osm@geggus.net>
 
 Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 */
@@ -33,8 +33,8 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
                                                            show_brackets boolean DEFAULT false,
                                                            separator text DEFAULT chr(10),
                                                            targetlang text DEFAULT 'de',
-                                                           place geometry DEFAULT NULL
-                                                           ) RETURNS TEXT AS $$
+                                                           place geometry DEFAULT NULL,
+                                                           name text DEFAULT NULL) RETURNS TEXT AS $$
  DECLARE
   -- 5 most commonly spoken languages using latin script (hopefully)   
   latin_langs text[] := '{"en","fr","es","pt","de"}';
@@ -42,6 +42,9 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
   lang text;
   tag text;
  BEGIN
+   IF (name IS NOT NULL) THEN
+     tags := tags || hstore('name',name);
+   END IF;
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
      return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator,tags);
@@ -104,7 +107,8 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
                                                             show_brackets boolean DEFAULT false,
                                                             separator text DEFAULT ' - ',
                                                             targetlang text DEFAULT 'de',
-                                                            place geometry DEFAULT NULL) RETURNS TEXT AS $$
+                                                            place geometry DEFAULT NULL,
+                                                            name text DEFAULT NULL) RETURNS TEXT AS $$
  DECLARE
   -- 5 most commonly spoken languages using latin script (hopefully)   
   latin_langs text[] := '{"en","fr","es","pt","de"}';
@@ -113,6 +117,9 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
   tag text;
   abbrev text;
  BEGIN
+   IF (name IS NOT NULL) THEN
+     tags := tags || hstore('name',name);
+   END IF;
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
      return osml10n_gen_combined_name(osml10n_street_abbrev(tags->target_tag,targetlang),
@@ -170,7 +177,10 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
  END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
-CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hstore, targetlang text DEFAULT 'de', place geometry DEFAULT NULL) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hstore,
+                                                                       targetlang text DEFAULT 'de',
+                                                                       place geometry DEFAULT NULL,
+                                                                       name text DEFAULT NULL) RETURNS TEXT AS $$
  DECLARE
   -- 5 most commonly spoken languages using latin script (hopefully)   
   latin_langs text[] := '{"en","fr","es","pt","de"}';
@@ -178,6 +188,9 @@ CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hsto
   lang text;
   tag text;
  BEGIN
+   IF (name IS NOT NULL) THEN
+     tags := tags || hstore('name',name);
+   END IF;
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
      return tags->target_tag;
