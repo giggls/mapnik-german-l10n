@@ -147,16 +147,16 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
    IF ( loc_in_brackets ) THEN
      -- explicitely mark the whole string as LTR
      IF ( show_brackets ) THEN
-       return chr(8237)||name||separator||'('||local_name||')'||chr(8236);
+       return chr(8234)||name||separator||'('||local_name||')'||chr(8236);
      ELSE
-       return chr(8237)||name||separator||local_name||chr(8236);
+       return chr(8234)||name||separator||local_name||chr(8236);
      END IF;
    ELSE
      -- explicitely mark the whole string as LTR
      IF ( show_brackets ) THEN
-       return chr(8237)||local_name||separator||'('||name||')'||chr(8236);
+       return chr(8234)||local_name||separator||'('||name||')'||chr(8236);
     ELSE
-       return chr(8237)||local_name||separator||name||chr(8236);
+       return chr(8234)||local_name||separator||name||chr(8236);
     END IF;
    END IF;
   END IF;

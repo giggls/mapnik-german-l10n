@@ -1,3 +1,10 @@
+osml10n (2.3.1) UNRELEASED; urgency=medium
+
+  * Fix bidi text bug which caused RTL street-names to render
+    from left to right.
+    
+ -- Sven Geggus <sven-debian@geggus.net>  Tue, 10 Apr 2018 18:33:09 +0200
+
 osml10n (2.3.0) unstable; urgency=medium
 
   * Add support to tags functions to have name in a separate column as
