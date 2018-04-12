@@ -20,6 +20,7 @@
 CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
   DECLARE
     country text;
+    thai_rm text;
   BEGIN
     -- RAISE LOG 'going to transliterate %', name;
     IF (place IS NULL) THEN
@@ -29,8 +30,8 @@ CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAUL
          Look up the country where the geometry is located and call
          the specific transliteration function.
         
-         Currently only japan is treated defferently, but other country
-         specific transliteration functions can be added easily
+         Currently japan and thailand are treated defferently, but other country
+         specific transliteration functions can be easily added
       */
       country=osml10n_get_country(place);
 
@@ -43,6 +44,13 @@ CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAUL
             return osml10n_kanji_transcript(name);
           ELSE
             return osml10n_translit(name);
+          END IF;
+        WHEN country='th' THEN
+          thai_rm=osml10n_thai_transcript(name);
+          IF (thai_rm IS NULL) THEN
+            return osml10n_translit(name);
+          ELSE
+            return thai_rm;
           END IF;
         ELSE
           return osml10n_translit(name);

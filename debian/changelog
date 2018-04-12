@@ -1,4 +1,10 @@
-osml10n (2.3.1) UNRELEASED; urgency=medium
+osml10n (2.4.0) unstable; urgency=medium
+
+  * Add support for thai language transliteration using pythainlp
+
+ -- Sven Geggus <sven-debian@geggus.net>  Thu, 12 Apr 2018 15:58:11 +0200
+
+osml10n (2.3.1) unstable; urgency=medium
 
   * Fix bidi text bug which caused RTL street-names to render
     from left to right.
