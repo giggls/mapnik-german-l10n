@@ -86,7 +86,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
      LOOP
        IF (tag ~ '^name:.+_rm$') THEN
          -- raise notice 'found romanization name tag %', tag;
-         return osml10n_gen_combined_name(tags->tag,tags->'name',loc_in_brackets,show_brackets,separator);
+         return osml10n_gen_combined_name(tags->tag,tags->'name',loc_in_brackets,show_brackets,separator,tags);
        END IF;
      END LOOP;
      -- raise notice 'last resort: doing transliteration';
@@ -165,7 +165,7 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
        IF (tag ~ '^name:.+_rm$') THEN
          -- raise notice 'found romanization name tag %', tag;
          return osml10n_gen_combined_name(osml10n_street_abbrev_all_latin(tags->tag),
-                                           osml10n_street_abbrev_non_latin(tags->'name'),loc_in_brackets,show_brackets,separator);
+                                           osml10n_street_abbrev_non_latin(tags->'name'),loc_in_brackets,show_brackets,separator,tags);
        END IF;
      END LOOP;
      -- raise notice 'last resort: doing transliteration';
