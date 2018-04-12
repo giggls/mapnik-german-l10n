@@ -64,6 +64,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
    regex text;
    unacc text;
    unacc_local text;
+   unacc_tag text;
    tag text;
  BEGIN
   IF (name is NULL) THEN
@@ -113,9 +114,10 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text, name text,
         FOREACH tag IN ARRAY akeys(tags)
         LOOP
           IF (tag ~ '^name:.+$') THEN
-            IF ((tags->tag) != local_name) THEN
-              regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(tags->tag, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
-              IF regexp_matches(concat(' ',name,' '),regex) IS NOT NULL THEN
+            unacc_tag = unaccent(tags->tag);
+            IF (unacc_tag != unacc_local) THEN
+              regex = '[\s\(\)\-,;:/\[\]](' || regexp_replace(unacc_tag, '[][#$^*()+{}\\|.?-]', '\\\&', 'g') ||')[\s\(\)\-,;:/\[\]]';
+              IF regexp_matches(concat(' ',unacc,' '),regex) IS NOT NULL THEN
                 /* As this regex is also true for 1:1 match we need to ignore this special case */
                 if (name != (tags->tag)) THEN
                   -- raise notice 'using % (%) as second name', tags->tag, tag;
