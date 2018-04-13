@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# generate psql extension from plpgsql scripts
+# generate psql extension "osml10n"
+# from plpgsql scripts
 # version must be given as parameter
 if [ $# -ne 2 ]; then
   echo "usage: genextension.sh <data_target_dir> <version>" >&2

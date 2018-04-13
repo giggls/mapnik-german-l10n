@@ -9,7 +9,7 @@ SUBDIRS = kanjitranscript icutranslit
 CLEANDIRS = $(SUBDIRS:%=clean-%)
 INSTALLDIRS = $(SUBDIRS:%=install-%)
 
-all: $(patsubst %.md,%.html,$(wildcard *.md)) INSTALL README Makefile $(SUBDIRS) osml10n.control country_languages.data  osml10n_country_osm_grid.data
+all: $(patsubst %.md,%.html,$(wildcard *.md)) INSTALL README Makefile $(SUBDIRS) osml10n.control osml10n_thai_transcript.control country_languages.data  osml10n_country_osm_grid.data
 
 INSTALL: INSTALL.md
 	pandoc --from markdown_github --to plain --standalone $< --output $@
@@ -35,6 +35,8 @@ install: $(INSTALLDIRS) all
 	mkdir -p $(DESTDIR)$(EXTDIR)/extension
 	install -D -c -m 644 osml10n--$(EXTVERSION).sql $(DESTDIR)$(EXTDIR)/extension/
 	install -D -c -m 644 osml10n.control $(DESTDIR)$(EXTDIR)/extension/
+	install -D -c -m 644 osml10n_thai_transcript--$(EXTVERSION).sql $(DESTDIR)$(EXTDIR)/extension/
+	install -D -c -m 644 osml10n_thai_transcript.control $(DESTDIR)$(EXTDIR)/extension/
 	install -D -c -m 644 *.data $(DESTDIR)$(EXTDIR)/extension/
 
 $(INSTALLDIRS):
@@ -55,10 +57,16 @@ $(CLEANDIRS):
 	$(MAKE) -C $(@:clean-%=%) clean
 
 osml10n--$(EXTVERSION).sql: plpgsql/*.sql country_languages.data
-	./genextension.sh $(EXTDIR)/extension $(EXTVERSION)
+	./gen_osml10n_extension.sh $(EXTDIR)/extension $(EXTVERSION)
+	
+osml10n_thai_transcript--$(EXTVERSION).sql: thaitranscript/*.sql
+	./gen_osml10n_thai_extension.sh $(EXTDIR)/extension $(EXTVERSION)
 
 osml10n.control: osml10n--$(EXTVERSION).sql
 	sed -e "s/VERSION/$(EXTVERSION)/g" osml10n.control.in >osml10n.control
+
+osml10n_thai_transcript.control: osml10n_thai_transcript--$(EXTVERSION).sql
+	sed -e "s/VERSION/$(EXTVERSION)/g" osml10n_thai_transcript.control.in >osml10n_thai_transcript.control
 
 country_languages.data:
 	grep -v \# country_languages.data.in >country_languages.data

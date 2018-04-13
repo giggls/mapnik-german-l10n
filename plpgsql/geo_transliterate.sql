@@ -46,11 +46,14 @@ CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAUL
             return osml10n_translit(name);
           END IF;
         WHEN country='th' THEN
-          thai_rm=osml10n_thai_transcript(name);
-          IF (thai_rm IS NULL) THEN
-            return osml10n_translit(name);
-          ELSE
-            return thai_rm;
+          -- Call 'osml10n_thai_transcript' only if available
+          IF EXISTS (SELECT 1 from pg_proc where proname = 'osml10n_thai_transcript') THEN
+            thai_rm=osml10n_thai_transcript(name);
+            IF (thai_rm IS NULL) THEN
+              return osml10n_translit(name);
+            ELSE
+              return thai_rm;
+            END IF;
           END IF;
         ELSE
           return osml10n_translit(name);

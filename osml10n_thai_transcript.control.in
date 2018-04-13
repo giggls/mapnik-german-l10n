@@ -1,0 +1,5 @@
+# osml10n_thai_transcript extension
+comment = 'Thai transcription function'
+default_version = 'VERSION'
+relocatable = true
+requires = 'plpython3u'

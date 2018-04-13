@@ -12,8 +12,8 @@ country_osm_grid.sql
 osml10n_country_osm_grid.data
 debian/postgresql-*-osml10n*
 debian/debhelper-build-stamp
-osml10n--*.sql
-osml10n.control
+*--*.sql
+*.control
 debian/files
 country_languages.data
 debian/.debhelper
