@@ -51,7 +51,7 @@ A convinient way of using these functions is to hide them behind virtual colums 
 
 ### Examples
 
-#### Old style
+#### Old style (do not use in new installations)
 ```
 select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',true) as name;
       -->	Москва́
@@ -92,8 +92,9 @@ select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Mos
 select osml10n_get_placename_from_tags('"name"=>"القاهرة","name:de"=>"Kairo","int_name"=>"Cairo","name:en"=>"Cairo"',false) as name;
        -->	Kairo
 		القاهرة
-select osml10n_get_placename_from_tags('"name"=>"Brixen Bressanone","name:de"=>"Brixen"',false) as name;
-       -->	Brixen Bressanone
+select osml10n_get_placename_from_tags('name=>"Brixen Bressanone",name:de=>"Brixen",name:it=>"Bressanone"',false);
+       -->	Brixen
+		Bressanone
 select osml10n_get_placename_from_tags('"name"=>"Roma","name:de"=>"Rom"',false) as name;
        -->	Rom
 		Roma
@@ -110,7 +111,8 @@ select osml10n_get_streetname_from_tags('"name"=>"улица Воздвижен�
 select osml10n_get_streetname_from_tags('"name"=>"вулиця Молока"',true,false,' - ','de') as name;
        -->	вул. Молока - vul. Moloka
 select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false) as name;
-       -->	주촌  Juchon
+       -->	주촌
+		Juchon
 select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false) as name;
        -->	Juchon
 		J주촌
