@@ -55,11 +55,12 @@ CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAUL
               return thai_rm;
             END IF;
           END IF;
+          return osml10n_translit(name);
         ELSE
           return osml10n_translit(name);
       END CASE;
 
-      return country;
+      return osml10n_translit(name);
     END IF;
   END;
 $$ LANGUAGE plpgsql STABLE;
