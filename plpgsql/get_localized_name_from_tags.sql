@@ -74,7 +74,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
        target_tag := 'name:' || lang;
        if tags ? target_tag THEN
          -- raise notice 'found roman language tag %', target_tag;
-         return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator);
+         return osml10n_gen_combined_name(tags->target_tag,tags->'name',loc_in_brackets,show_brackets,separator,tags);
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
@@ -152,7 +152,7 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
        if tags ? target_tag THEN
          -- raise notice 'found roman language tag %', target_tag;
          return osml10n_gen_combined_name(osml10n_street_abbrev(tags->target_tag,lang),
-                                           osml10n_street_abbrev_all(tags->'name'),loc_in_brackets,show_brackets,separator);
+                                           osml10n_street_abbrev_all(tags->'name'),loc_in_brackets,show_brackets,separator,tags);
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
