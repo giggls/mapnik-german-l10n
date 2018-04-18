@@ -1,3 +1,10 @@
+osml10n (2.4.1) unstable; urgency=medium
+
+  * Use the advanced name combination code also in cases where another roman
+    language than the target language has been found.
+
+ -- Geggus <geg@tile.iosb.fraunhofer.de>  Wed, 18 Apr 2018 17:53:53 +0200
+
 osml10n (2.4.0) unstable; urgency=medium
 
   * Add support for thai language transliteration using pythainlp
