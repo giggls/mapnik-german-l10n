@@ -47,6 +47,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT
   abbrev=osml10n_street_abbrev_de(longname);
   abbrev=osml10n_street_abbrev_en(abbrev);
   abbrev=osml10n_street_abbrev_ru(abbrev);
+  abbrev=osml10n_street_abbrev_uk(abbrev);
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -57,7 +58,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    These are currently: english and german
    
 */
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_all_latin(longname text) RETURNS TEXT AS $$
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN

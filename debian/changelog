@@ -1,3 +1,10 @@
+osml10n (2.5.0) unstable; urgency=medium
+
+  * remove legacy (old style) functions
+  * some code refracturing move street abbrev function into osml10n_gen_combined_name
+
+ -- Sven Geggus <sven-debian@geggus.net>  Sat, 21 Apr 2018 13:45:44 +0200
+
 osml10n (2.4.1) unstable; urgency=medium
 
   * Use the advanced name combination code also in cases where another roman

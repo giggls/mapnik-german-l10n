@@ -24,24 +24,15 @@ CREATE EXTENSION osml10n;
 ### API
 The following functions are provided for use in map rendering:
 
-__`osml10n_get_placename(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT chr(10), place geometry DEFAULT NULL)`__
-:	Will try its best to return a usable name pair with name in brackets (or vise versa if loc_in_brackets is set)
 
-__`osml10n_get_streetname(name text, local_name text, int_name text, name_en text, loc_in_brackets boolean, how_brackets boolean DEFAULT false, separator text DEFAULT ' - ', langcode text DEFAULT 'de', place geometry DEFAULT NULL)`__
-:	Same as get_localized_placename, but with some common abbreviations for street names (Straße->Str.), if name ist longer than 15 characters
+__`osml10n_get_placename_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT chr(10), targetlang text DEFAULT 'de', place geometry DEFAULT NULL, name text DEFAULT NULL)`__
+:	Will try its best to return a usable name pair with both a localiced name and an on site name
 
-__`osml10n_get_name_without_brackets(name text, local_name text, int_name text, name_en text, place geometry DEFAULT NULL)`__
-:	Same as get_localized_placename, but with no names in brackets
+__`osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT ' - ', targetlang text DEFAULT 'de', place geometry DEFAULT NULL, name text DEFAULT NULL)`__
+:	Same as get_localized_placename_from_tags, but with some common abbreviations for street names (Straße->Str.), if name ist longer than 15 characters
 
-__`osml10n_get_placename_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT chr(10), targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
-:	Same as osml10n_get_placename but with hstore column input
-
-
-__`osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT ' - ', targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
-:	Same as osml10n_get_streetname but with hstore column input
-
-__`osml10n_get_name_without_brackets_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL)`__
-:	Same as osml10n_get_placename but with hstore column input
+__`osml10n_get_name_without_brackets_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL, name text DEFAULT NULL)`__
+:	Produces localiced name only output (on site name will be discarded)
 
 __`osml10n_get_country_name(tags hstore, separator text DEFAULT chr(10), targetlang text DEFAULT 'de')`__
 :	Generate a combined country name from name:xx tags (targetlang plus official languages of the country)
@@ -51,38 +42,6 @@ A convinient way of using these functions is to hide them behind virtual colums 
 
 ### Examples
 
-#### Old style (do not use in new installations)
-```
-select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',true) as name;
-      -->	Москва́
-		Moskau
-select osml10n_get_placename('Москва́','Moskau',NULL,'Moscow',false) as name;
-      -->	Moskau
-		Москва́
-select osml10n_get_placename('القاهرة','Kairo','Cairo','Cairo',false) as name;
-      -->	Kairo
-		القاهرة
-select osml10n_get_placename('Brixen Bressanone','Brixen',NULL,NULL,false) as name;
-      -->	Brixen Bressanone
-select osml10n_get_placename('Roma','Rom',NULL,NULL,false) as name;
-      -->	Rom
-		Roma
-select osml10n_get_streetname('Doktor-No-Straße',NULL,NULL,NULL,false) as name;
-      -->	Dr.-No-Str.
-select osml10n_get_streetname('Dr. No Street','Professor-Doktor-No-Straße',NULL,NULL,false) as name;
-      -->	Prof.-Dr.-No-Str. - Dr. No St.
-select osml10n_get_name_without_brackets('Dr. No Street','Doktor-No-Straße',NULL,NULL) as name;
-      -->	Doktor-No-Straße
-select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,'Vozdvizhenka Street',true,true,' ','de') as name;
-      -->	ул. Воздвиженка (Vozdvizhenka St.)
-select osml10n_get_streetname('улица Воздвиженка',NULL,NULL,NULL,true,true,' ','de') as name;
-      -->	ул. Воздвиженка (ul. Vozdviženka)
-select osml10n_get_streetname('вулиця Молока',NULL,NULL,NULL,true,false,' - ','de') as name;
-      -->	вул. Молока - vul. Moloka
-```
-
-#### Using hstore column containing all name tags from Openstreetmap
-```
 select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Moskau","name:en"=>"Moscow"',true) as name;
        -->	Москва́
 		Moskau

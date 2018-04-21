@@ -139,6 +139,14 @@ EOF
 )
 printresult "$res" "‪Brüssel|Bruxelles‬"
 
+# upstream carto style database layout
+echo "select osml10n_get_placename_from_tags('name:de=>Brüssel,name:en=>Brussels,name:xx=>Brussel,name:af=>Brussel,name:fr=>Bruxelles,name:fo=>Brussel',false,false, '|','de',NULL,'Bruxelles - Brussel');"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_placename_from_tags('name:de=>Brüssel,name:en=>Brussels,name:xx=>Brussel,name:af=>Brussel,name:fr=>Bruxelles,name:fo=>Brussel',false,false, '|','de',NULL,'Bruxelles - Brussel');
+EOF
+)
+printresult "$res" "‪Brüssel|Bruxelles‬"
+
 echo "select osml10n_get_placename_from_tags('"name"=>"Brixen Bressanone","name:de"=>"Brixen","name:it"=>"Bressanone"',false,false, '|');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_placename_from_tags('"name"=>"Brixen Bressanone","name:de"=>"Brixen","name:it"=>"Bressanone"',false,false, '|');
@@ -174,6 +182,13 @@ EOF
 )
 printresult "$res" "Doktor-No-Straße"
 
+echo "select osml10n_get_name_without_brackets_from_tags('"name:de"=>"Doktor-No-Straße"','de',NULL,'Dr. No Street');"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_name_without_brackets_from_tags('"name:de"=>"Doktor-No-Straße"','de',NULL,'Dr. No Street');
+EOF
+)
+printresult "$res" "Doktor-No-Straße"
+
 echo "select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');
@@ -195,6 +210,14 @@ EOF
 )
 printresult "$res" "‪вул. Молока - vul. Moloka‬"
 
+# upstream carto style database layout
+echo "select osml10n_get_streetname_from_tags('',true,false,' - ','de',NULL,'вулиця Молока');"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_streetname_from_tags('',true,false,' - ','de',NULL,'вулиця Молока');
+EOF
+)
+printresult "$res" "‪вул. Молока - vul. Moloka‬"
+
 echo "select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false,false,'|');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false,false,'|');
@@ -208,6 +231,20 @@ select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","n
 EOF
 )
 printresult "$res" "‪Juchon|주촌‬"
+
+echo "select osml10n_get_streetname_from_tags('"name"=>"Pha Yar Kai Road ဘုရားကိုင်လမ်း", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_streetname_from_tags('"name"=>"Pha Yar Kai Road ဘုရားကိုင်လမ်း", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');
+EOF
+)
+printresult "$res" "‪ဘုရားကိုင်လမ်း|Pha Yar Kai Rd.‬"
+
+echo "select osml10n_get_streetname_from_tags('"name"=>"ဘုရားကိုင်လမ်း", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_streetname_from_tags('"name"=>"ဘုရားကိုင်လမ်း", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');
+EOF
+)
+printresult "$res" "‪ဘုရားကိုင်လမ်း|Pha Yar Kai Rd.‬"
 
 echo "select osml10n_get_country_name('"ISO3166-1:alpha2"=>"IN","name:de"=>"Indien","name:hi"=>"भारत","name:en"=>"India"','|');"
 res=$(psql -X -t -A $DB <<EOF
