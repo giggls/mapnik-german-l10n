@@ -42,21 +42,22 @@ A convinient way of using these functions is to hide them behind virtual colums 
 
 ### Examples
 
+```sql
 select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Moskau","name:en"=>"Moscow"',true) as name;
        -->	Москва́
-		Moskau
+       -->	Moskau
 select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Moskau","name:en"=>"Moscow"',false) as name;
        -->	Moskau
-		Москва́
+       -->	Москва́
 select osml10n_get_placename_from_tags('"name"=>"القاهرة","name:de"=>"Kairo","int_name"=>"Cairo","name:en"=>"Cairo"',false) as name;
        -->	Kairo
-		القاهرة
+       -->	القاهرة
 select osml10n_get_placename_from_tags('name=>"Brixen Bressanone",name:de=>"Brixen",name:it=>"Bressanone"',false);
        -->	Brixen
-		Bressanone
+       --> 	Bressanone
 select osml10n_get_placename_from_tags('"name"=>"Roma","name:de"=>"Rom"',false) as name;
        -->	Rom
-		Roma
+       -->	Roma
 select osml10n_get_streetname_from_tags('"name"=>"Doktor-No-Straße"',false) as name;
        -->	Dr.-No-Str.
 select osml10n_get_streetname_from_tags('"name"=>"Dr. No Street","name:de"=>"Professor-Doktor-No-Straße"',false) as name;
@@ -69,14 +70,14 @@ select osml10n_get_streetname_from_tags('"name"=>"улица Воздвижен�
        -->	ул. Воздвиженка (ul. Vozdviženka)
 select osml10n_get_streetname_from_tags('"name"=>"вулиця Молока"',true,false,' - ','de') as name;
        -->	вул. Молока - vul. Moloka
-select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false) as name;
+select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko-Latn"=>"Juchon"',true) as name;
        -->	주촌
-		Juchon
-select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false) as name;
        -->	Juchon
-		J주촌
+select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko-Latn"=>"Juchon"',false) as name;
+       -->	Juchon
+       -->	J주촌
 select osml10n_get_country_name('"ISO3166-1:alpha2"=>"IN","name:de"=>"Indien","name:hi"=>"भारत","name:en"=>"India"') as name;
        -->	Indien
-		भारत
-		India
+       -->	भारत
+       -->	India
 ```

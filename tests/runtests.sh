@@ -218,14 +218,14 @@ EOF
 )
 printresult "$res" "‪вул. Молока - vul. Moloka‬"
 
-echo "select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false,false,'|');"
+echo "select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko-Latn"=>"Juchon"',true,false,'|');"
 res=$(psql -X -t -A $DB <<EOF
-select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false,false,'|');
+select osml10n_get_placename_from_tags('"name"=>"주촌  Juchon", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',true,false,'|');
 EOF
 )
-printresult "$res" "‪Juchon|주촌‬"
+printresult "$res" "‪주촌|Juchon‬"
 
-echo "select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false,false,'|');"
+echo "select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko-Latn"=>"Juchon"',false,false,'|');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_placename_from_tags('"name"=>"주촌", "name:ko"=>"주촌","name:ko_rm"=>"Juchon"',false,false,'|');
 EOF

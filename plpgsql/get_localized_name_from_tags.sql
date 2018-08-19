@@ -230,7 +230,7 @@ Get name by looking at various name tags or transliteration as a last resort:
 6. name:es (if not targetlang)
 7: name:pt (if not targetlang)
 8. name:de (if not targetlang)
-9. Any tag of the form name:<targetlang>_rm
+9. Any tag of the form name:<targetlang>_rm or name:<targetlang>-Latn
 
 This scheme is used in functions:
 osml10n_get_name_from_tags and osml10n_get_name_without_brackets_from_tags
@@ -287,24 +287,22 @@ CREATE or REPLACE FUNCTION osml10n_get_name_from_tags(tags hstore,
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
-     -- this usually looks like name:ja_rm or name:kr_rm
-     -- thus a suitable regex would be name:.+_rm
+     -- this usually looks like name:ja_rm or  name:ko-Latn
      -- Just use the first tag of this kind found, because
      -- having more than one of them does not make sense
      FOREACH tag IN ARRAY akeys(tags)
      LOOP
-       IF (tag ~ '^name:.+_rm$') THEN
+       IF ((tag ~ '^name:.+_rm$') or (tag ~ '^name:.+-Latn$')) THEN
          -- raise notice 'found romanization name tag %', tag;
          return osml10n_gen_combined_name(tag,'name',tags,loc_in_brackets,show_brackets,separator,is_street,true,true);
        END IF;
      END LOOP;
-     -- raise notice 'last resort: doing transliteration';
      IF is_street THEN
-       tags := tags || hstore('name:int_rm',osml10n_geo_translit(osml10n_street_abbrev_non_latin(tags->'name'),place));
+       tags := tags || hstore('name:Latn',osml10n_geo_translit(osml10n_street_abbrev_non_latin(tags->'name'),place));
      ELSE
-       tags := tags || hstore('name:int_rm',osml10n_geo_translit(tags->'name',place));
+       tags := tags || hstore('name:Latn',osml10n_geo_translit(tags->'name',place));
      END IF;
-     return osml10n_gen_combined_name('name:int_rm','name',tags,loc_in_brackets,show_brackets,separator,is_street,false,true);
+     return osml10n_gen_combined_name('name:Latn','name',tags,loc_in_brackets,show_brackets,separator,is_street,false,true);
    ELSE
      return NULL;
    END IF;
@@ -358,13 +356,12 @@ CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hsto
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
-     -- this usually looks like name:ja_rm or name:kr_rm
-     -- thus a suitable regex would be name:.+_rm
+     -- this usually looks like name:ja_rm or  name:ko-Latn
      -- Just use the first tag of this kind found, because
      -- having more than one of them does not make sense
      FOREACH tag IN ARRAY akeys(tags)
      LOOP
-       IF (tag ~ '^name:.+_rm$') THEN
+       IF ((tag ~ '^name:.+_rm$') or (tag ~ '^name:.+-Latn$')) THEN
          -- raise notice 'found romanization name tag %', tag;
          return tags->tag;
        END IF;

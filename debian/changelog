@@ -1,3 +1,9 @@
+osml10n (2.5.1) unstable; urgency=medium
+
+  * Add support for XX-Latn https://wiki.openstreetmap.org/wiki/Automated_edits/Ian_Wagner
+
+ -- Sven Geggus <sven-debian@geggus.net>  Sun, 19 Aug 2018 12:38:58 +0200
+
 osml10n (2.5.0) unstable; urgency=medium
 
   * remove legacy (old style) functions
