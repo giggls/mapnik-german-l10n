@@ -9,6 +9,10 @@ AS '/path/to/osml10n_translit.so', 'osml10n_translit' LANGUAGE C STRICT;
 Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 
 */
+
+/* needed in icu >= 62 */
+#define U_USING_ICU_NAMESPACE 1
+
 #include <iostream>
 #include <unicode/unistr.h>
 #include <unicode/translit.h>
