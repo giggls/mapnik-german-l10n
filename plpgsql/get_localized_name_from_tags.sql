@@ -50,7 +50,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    helper function "osml10n_gen_combined_name"
    Will create a name+local_name pair
    
-   In case use_tags is true the combination night be re-created manually
+   In case use_tags is true the combination might be re-created manually
    from a name:xx tag using the requested separator instad of name
    using a somewhat heuristic algorithm (see below)
    
@@ -76,6 +76,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
    langcode text;
    n text;
    ln text;
+   pos int;
  BEGIN
   IF NOT tags ? 'name' THEN
     IF is_street THEN
@@ -111,7 +112,8 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
   unacc = unaccent(tags->name);
   unacc_local = unaccent(tags->local_name);
   found = false;
-  if (position(unacc_local in unacc) >0) THEN
+  pos=position(unacc_local in unacc);
+  if (pos >0) THEN
     /* the regexp_replace function below is a quotemeta equivalent 
        http://stackoverflow.com/questions/11442090/implementing-quotemeta-q-e-in-tcl/11442113
     */
@@ -141,6 +143,29 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
                 /* As this regex is also true for 1:1 match we need to ignore this special case */
                 if ('name' != tag) THEN
                   -- raise notice 'using % (%) as second name', tags->tag, tag;
+                  /* we found a 'second' name */
+                  /* While a request might want to prefer printing this
+                     second name first anyway, to prefer on the ground
+                     language over l10n we pretend to know better in one 
+                     special case:
+                     
+                     if the name in our target language is the first one in
+                     the generic name tag we will likely also want to print
+                     it first in l10n output.
+                     
+                     This will make a lot of sense in bilingual areas where
+                     mappers usually use the convention of putting the more
+                     important language first in bilingual generic name tag.
+                     
+                     So just remove the "loc_in_brackets = false" assignment
+                     if you want to get rid of this fuzzy behaviour!
+                     
+                     Probably it might be a good idea to add an additional
+                     strict option to disable this behaviour.
+                  */
+                  if (pos = 1) THEN
+                    loc_in_brackets = false;
+                  END IF;
                   name = tag;
                   nobrackets=false;
                   found=true;

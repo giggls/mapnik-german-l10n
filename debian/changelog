@@ -1,3 +1,9 @@
+osml10n (2.5.2) unstable; urgency=medium
+
+  * Relax the loc_in_brackets switch to be a bit more fuzzy.  If "true" behave
+
+ -- Sven Geggus <sven-debian@geggus.net>  Tue, 25 Sep 2018 14:57:03 +0200
+
 osml10n (2.5.1) unstable; urgency=medium
 
   * Add support for XX-Latn https://wiki.openstreetmap.org/wiki/Automated_edits/Ian_Wagner
