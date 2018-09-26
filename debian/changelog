@@ -1,3 +1,9 @@
+osml10n (2.5.3) unstable; urgency=medium
+
+  * further fiddling with the loc_in_brackets feature
+
+ -- Sven Geggus <sven-debian@geggus.net>  Wed, 26 Sep 2018 13:37:46 +0200
+
 osml10n (2.5.2) unstable; urgency=medium
 
   * Relax the loc_in_brackets switch to be a bit more fuzzy.  If "true" behave

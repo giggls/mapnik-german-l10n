@@ -21,13 +21,18 @@ DB=$1
 
 exitval=0
 
+passed=0
+failed=0
+
 # $1 result
 # $2 expected
 function printresult() {
   if [ "$1" = "$2" ]; then
     echo -n -e "[\033[0;32mOK\033[0;0m]     "
+    ((passed++))
   else
     echo -n -e "[\033[1;31mFAILED\033[0;0m] "
+    ((failed++))
     exitval=1
   fi
   echo -e "(expected >$2<, got >$1<)"
@@ -154,6 +159,22 @@ EOF
 )
 printresult "$res" "‪Brixen|Bressanone‬"
 
+# This is a fictual tagging as I do not know of an italian speaking town
+# wehre the names are that similar
+echo "select osml10n_get_placename_from_tags('"name"=>"Merano - Meran","name:de"=>"Meran","name:it"=>"Merano"',true,false, '|') as name;"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_placename_from_tags('"name"=>"Merano - Meran","name:de"=>"Meran","name:it"=>"Merano"',true,false, '|') as name;
+EOF
+)
+printresult "$res" "‪Merano|Meran‬"
+
+echo "select osml10n_get_placename_from_tags('"name"=>"Meran - Merano","name:de"=>"Meran","name:it"=>"Merano"',true,false, '|') as name;"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_placename_from_tags('"name"=>"Meran - Merano","name:de"=>"Meran","name:it"=>"Merano"',true,false, '|') as name;
+EOF
+)
+printresult "$res" "‪Meran|Merano‬"
+
 echo "select osml10n_get_placename_from_tags('"name"=>"Roma","name:de"=>"Rom"',false,false, '|');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_placename_from_tags('"name"=>"Roma","name:de"=>"Rom"',false,false, '|');
@@ -232,9 +253,9 @@ EOF
 )
 printresult "$res" "‪Juchon|주촌‬"
 
-echo "select osml10n_get_streetname_from_tags('"name"=>"Pha Yar Kai Road ဘုရားကိုင်လမ်း", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');"
+echo "select osml10n_get_streetname_from_tags('"name"=>"ဘုရားကိုင်လမ်း Pha Yar Kai Road", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');"
 res=$(psql -X -t -A $DB <<EOF
-select osml10n_get_streetname_from_tags('"name"=>"Pha Yar Kai Road ဘုရားကိုင်လမ်း", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');
+select osml10n_get_streetname_from_tags('"name"=>"ဘုရားကိုင်လမ်း Pha Yar Kai Road", "highway"=>"secondary", "name:en"=>"Pha Yar Kai Road", "name:my"=>"ဘုရားကိုင်လမ်း"',true,false,'|');
 EOF
 )
 printresult "$res" "‪ဘုရားကိုင်လမ်း|Pha Yar Kai Rd.‬"
@@ -252,6 +273,8 @@ select osml10n_get_country_name('"ISO3166-1:alpha2"=>"IN","name:de"=>"Indien","n
 EOF
 )
 printresult "$res" "Indien|भारत|India"
+
+echo -e "\n$passed tests passed $failed tests failed."
 
 exit $exitval
 
