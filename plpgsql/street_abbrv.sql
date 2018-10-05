@@ -24,6 +24,12 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) R
   func text;
   result text;
  BEGIN
+  IF (position('-' in langcode)>0) THEN
+    return longname;
+  END IF;
+  IF (position('_' in langcode)>0) THEN
+    return longname;
+  END IF;  
   func ='osml10n_street_abbrev_'|| langcode;
   call = 'select ' || func || '(' || quote_nullable(longname) || ')';
   execute call into result;
