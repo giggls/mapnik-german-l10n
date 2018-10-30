@@ -164,7 +164,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
                      strict option to disable this behaviour.
                   */
                   if (pos = 1) THEN
-                    IF regexp_match(substring(unacc,length(unacc_local)+1,1),'[\s\(\)\-,;:/\[\]]') IS NOT NULL THEN
+                    IF regexp_matches(substring(unacc,length(unacc_local)+1,1),'[\s\(\)\-,;:/\[\]]') IS NOT NULL THEN
                       raise notice 'swapping primary/second name';
                       loc_in_brackets = false;
                     END IF;
