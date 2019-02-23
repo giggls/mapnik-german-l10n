@@ -101,17 +101,17 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_de(longname text) RETURNS TEXT 
   abbrev text;
  BEGIN
   abbrev=longname;
-  IF (position('traße' in abbrev)>1) THEN
+  IF (position('traße' in abbrev)>2) THEN
    abbrev=regexp_replace(abbrev,'Straße\M','Str.');
    abbrev=regexp_replace(abbrev,'straße\M','str.');
   END IF;
-  IF (position('asse' in abbrev)>1) THEN
+  IF (position('asse' in abbrev)>2) THEN
    abbrev=regexp_replace(abbrev,'Strasse\M','Str.');
    abbrev=regexp_replace(abbrev,'strasse\M','str.');
    abbrev=regexp_replace(abbrev,'Gasse\M','G.');
    abbrev=regexp_replace(abbrev,'gasse\M','g.');
   END IF;
-  IF (position('latz' in abbrev)>1) THEN
+  IF (position('latz' in abbrev)>2) THEN
    abbrev=regexp_replace(abbrev,'Platz\M','Pl.');
    abbrev=regexp_replace(abbrev,'platz\M','pl.');
   END IF;
