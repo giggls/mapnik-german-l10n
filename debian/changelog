@@ -1,3 +1,9 @@
+osml10n (2.5.6) unstable; urgency=medium
+
+  * Fix osml10n_thai_transcript to work with newer version of pythainlp (currently 2.0.5)
+
+ -- Sven Geggus <sven-debian@geggus.net>  Sat, 25 May 2019 22:38:45 +0200
+
 osml10n (2.5.5) unstable; urgency=medium
 
   * Merge small pull request.

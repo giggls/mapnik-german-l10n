@@ -30,8 +30,7 @@ CREATE or REPLACE FUNCTION osml10n_thai_transcript(inpstr text) RETURNS TEXT AS 
     return(strlist)
   
   try:
-    from pythainlp.romanization import romanization
-    from pythainlp.tokenize import word_tokenize
+    import pythainlp
   except:
     plpy.notice("pythainlp not installed, falling back to ICU")
     return(None)
@@ -42,9 +41,9 @@ CREATE or REPLACE FUNCTION osml10n_thai_transcript(inpstr text) RETURNS TEXT AS 
   for st in stlist:
     if (unicodedata.name(st[0]).split(' ')[0] == 'THAI'):
       transcript=[]
-      for w in word_tokenize(st):
+      for w in pythainlp.word_tokenize(st):
         try:
-          transcript.append(romanization(w,engine='royin'))
+          transcript.append(pythainlp.romanize(w))
         except:
           plpy.notice("thainlp error transcribing >%s<" % w)
           return(None)
