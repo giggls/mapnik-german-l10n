@@ -21,7 +21,8 @@ if ! [ -f country_osm_grid.sql ]; then
   curl -s http://www.nominatim.org/data/country_grid.sql.gz |gzip -d >country_osm_grid.sql
 fi
 
-if ! [ -f country_osm_grid.sql ]; then
+if ! [ -s country_osm_grid.sql ]; then
+  rm -f country_osm_grid.sql
   echo "failed."
   exit 1
 else
