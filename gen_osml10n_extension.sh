@@ -8,6 +8,14 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
+# check if commands we need are available
+for cmd in curl sed basename; do
+  if ! command -v $cmd >/dev/null; then
+    echo "ERROR: command >>$cmd<< not found, please install!" >&2
+    exit 1
+  fi
+done
+
 if ! [ -f country_osm_grid.sql ]; then
   echo -n "Trying to download country_grid.sql.gz from nominatim.org... "
   curl -s http://www.nominatim.org/data/country_grid.sql.gz |gzip -d >country_osm_grid.sql
