@@ -48,8 +48,12 @@ postgresql-plpython3 is probably not an option for anybody.
 If osml10n_thai_transcript is not installed transcription for thai language
 will fall back to libicu which will not produce very good results.
 
-To make the python script work pythainlp must be installed using the
-pip (pip3) package manager.
+To make osml10n_thai_transcript work pythainlp must be installed on the system
+level using the pip (pip3) package manager:
+
+```
+sudo pip3 install pythainlp
+```
 
 ### 2. Load the required extensions into your database
 ```sql
