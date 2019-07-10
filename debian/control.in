@@ -5,7 +5,7 @@ Maintainer: Sven Geggus <sven-osm@geggus.net>
 Build-Depends: debhelper (>= 8.0.0), libicu-dev,
  postgresql-server-dev-all,
  postgresql-server-dev-9.4 | postgresql-server-dev-9.5 | postgresql-server-dev-10 | postgresql-server-dev-11,
- curl, libkakasi2-dev, libutf8proc-dev, pandoc
+ curl, libkakasi2-dev, libutf8proc-dev, pandoc, git-lfs
 Standards-Version: 3.9.2
 
 Package: postgresql-PGVERSION-osml10n

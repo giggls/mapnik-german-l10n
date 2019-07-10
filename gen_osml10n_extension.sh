@@ -16,17 +16,26 @@ for cmd in curl sed basename; do
   fi
 done
 
-if ! [ -f country_osm_grid.sql ]; then
-  echo -n "Trying to download country_grid.sql.gz from nominatim.org... "
-  curl -s http://www.nominatim.org/data/country_grid.sql.gz |gzip -d >country_osm_grid.sql
-fi
+# country_osm_grid.sql is now included as lfs object in the repository
+# if git-lfs is not installed we will just get a small pointer file
+# thus we need to get the file otherwise
 
-if ! [ -s country_osm_grid.sql ]; then
+# this will replace the pointer file if git-lfs is available at build time
+git lfs pull 2>/dev/null >/dev/null
+
+# download from nominatim otherwise
+if $(head -n 3 country_osm_grid.sql |grep -q version); then
   rm -f country_osm_grid.sql
-  echo "failed."
-  exit 1
-else
-  echo "done."
+  echo -n "git-lfs seems to be unavailable, trying to download country_grid.sql.gz from nominatim.org... "
+  curl -s http://www.nominatim.org/data/country_grid.sql.gz |gzip -d >country_osm_grid.sql
+
+  if ! [ -s country_osm_grid.sql ]; then
+    rm -f country_osm_grid.sql
+    echo "failed."
+    exit 1
+  else
+    echo "done."
+  fi
 fi
 
 SCRIPTS=plpgsql/*
