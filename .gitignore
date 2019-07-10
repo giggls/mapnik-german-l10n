@@ -8,7 +8,6 @@ README.html
 INSTALL.html
 README
 INSTALL
-country_osm_grid.sql
 osml10n_country_osm_grid.data
 debian/postgresql-*-osml10n*
 debian/debhelper-build-stamp
