@@ -18,21 +18,20 @@ for line in content.splitlines():
   if '</table>' in line:
     inside_table = False
   if inside_table:
-    if '<td>' in line:
+    if '<td' in line:
       line=regex.sub('',line).strip()
-      # print line
       if col == 0:
-        country['iso']=line
+        country['iso']=line.lower()
       if col == 1:
         country['name']=line
-      if col == 2:
+      if col == 3:
         country['langs']=line
       # check for propper table alignment (<tr><td>)
       if col == 0:
         if '<tr>' not in oldline:
           sys.stderr.write("invalid <tr><td>alignment")
           sys.exit(1)
-      if col < 2:
+      if col < 3:
         col+=1
       else:
         countries.append(dict(country))
