@@ -1,14 +1,15 @@
 ## Software requirements:
 
 * GNU/Linux OS
-* Postgresql 8.4 or 8.5, PostGIS 2.x
+* Postgresql 8.x - 11.x, PostGIS 2.x
 * Kanji Kana Simple Inverter library (http://kakasi.namazu.org/)
 * ICU - International Components for Unicode library (http://site.icu-project.org/)
 
 This code is developed on Debian 9.x and should also work on Debian
 derivatives like Ubuntu and other GNU/Linux distributions.
 
-All required libraries can be installed from their respective repositories.
+If you are on Debian or Ubuntu all required libraries should be installed from
+your distribution. Please do not compile them from source!
 
 Microsoft Windows is currently not supported and I have no plans to do so.
 If you feel an urgend need to port this code to Windows I would be happy to
@@ -43,7 +44,7 @@ put it inside your build directory.
 
 Thai transcript is a seperate extension because it is based on python
 (https://github.com/PyThaiNLP/pythainlp) and installing
-postgresql-plpython3 is probably not an option for anybody.
+**postgresql-plpython3** is probably not an option for anybody.
 
 If osml10n_thai_transcript is not installed transcription for thai language
 will fall back to libicu which will not produce very good results.
