@@ -16,3 +16,4 @@ debian/debhelper-build-stamp
 debian/files
 country_languages.data
 debian/.debhelper
+country_osm_grid.sql
