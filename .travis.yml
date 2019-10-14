@@ -1,0 +1,26 @@
+dist: bionic
+
+env:
+  global:
+    - PGPORT=5433
+
+addons:
+  postgresql: 11
+  apt:
+    packages:
+    - postgresql-server-dev-11
+    - postgresql-11-postgis-2.5
+    - postgresql-11-postgis-2.5-scripts
+
+before_install:
+  - psql --command="CREATE EXTENSION fuzzystrmatch"
+  - psql --command="CREATE EXTENSION unaccent"
+
+install:
+  - cd ${TRAVIS_BUILD_DIR}
+  - make install
+  - psql --command="CREATE EXTENSION osml10n"
+
+script:
+  - cd ${TRAVIS_BUILD_DIR}/test
+  - ./runtests.sh
