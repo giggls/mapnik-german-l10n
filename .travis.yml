@@ -20,7 +20,7 @@ before_install:
 
 install:
   - cd ${TRAVIS_BUILD_DIR}
-  - make install
+  - sudo make install
   - psql --command="CREATE EXTENSION osml10n"
 
 script:
