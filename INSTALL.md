@@ -28,10 +28,10 @@ make deb
 ```
 
 To make this work you will need to install the required libraries:
-```sh 
+
 sudo apt-get install devscripts equivs
 sudo mk-build-deps -i debian/control
-```
+
 On other Distributions it should work to use `make`/`make install`, given the
 required libraries listed in `debian/control` have been installed.
 I would be happy if somebody would contribute a spec-file for rpm based
@@ -43,17 +43,17 @@ If your computer is offline for some reason. Just download this file and
 put it inside your build directory.
 
 Thai transcript is a seperate extension because it is based on python
-(https://github.com/PyThaiNLP/pythainlp) and installing
-**postgresql-plpython3** is probably not an option for anybody.
+(https://pypi.org/project/tltk/) and installing
+**postgresql-plpython3** is probably not an option for everybody.
 
 If osml10n_thai_transcript is not installed transcription for thai language
 will fall back to libicu which will not produce very good results.
 
-To make osml10n_thai_transcript work pythainlp must be installed on the system
+To make osml10n_thai_transcript work tltk must be installed on the system
 level using the pip (pip3) package manager:
 
-```
-sudo pip3 install pythainlp
+```sh
+sudo pip3 install tltk
 ```
 
 ### 2. Load the required extensions into your database

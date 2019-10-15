@@ -1,0 +1,11 @@
+#!/usr/bin/python3
+#
+# python test-script for use without PostgreSQL
+# example:
+#
+#
+#
+
+import sys
+
+def osml10n_thai_transcript(inpstr):

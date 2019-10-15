@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cat head >osml10n_thai_transcript.py
+sed -e '1h;2,$H;$!d;g' -e 's/.*$$\(.*\)$$ .*/\1/g' thai_transcript.sql >>osml10n_thai_transcript.py
+cat tail >>osml10n_thai_transcript.py
+
+chmod 755 osml10n_thai_transcript.py
+
