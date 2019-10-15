@@ -14,7 +14,7 @@ addons:
     - postgresql-server-dev-11
     - postgresql-plpython3-11
     - python3-pip
-    - python-setuptools
+    - python3-setuptools
     - postgresql-11-postgis-2.5
     - postgresql-11-postgis-2.5-scripts
 
