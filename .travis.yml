@@ -12,6 +12,7 @@ addons:
     - libutf8proc-dev
     - pandoc
     - postgresql-server-dev-11
+    - postgresql-plpython3-11
     - postgresql-11-postgis-2.5
     - postgresql-11-postgis-2.5-scripts
 
@@ -22,12 +23,13 @@ before_install:
   - psql --dbname=gis --command="CREATE EXTENSION unaccent"
   - psql --dbname=gis --command="CREATE EXTENSION postgis"
   - psql --dbname=gis --command="CREATE EXTENSION hstore"
+  - psql --dbname=gis --command="CREATE EXTENSION plpython3u"
 
 install:
   - cd ${TRAVIS_BUILD_DIR}
   - sudo make install
   - psql --dbname=gis --command="CREATE EXTENSION osml10n"
-  - psql --dbname=gis --command="CREATE EXTENSION osml10n_thai_transcript CASCADE"
+  - psql --dbname=gis --command="CREATE EXTENSION osml10n_thai_transcript"
 
 script:
   - cd ${TRAVIS_BUILD_DIR}/tests
