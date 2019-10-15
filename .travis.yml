@@ -16,7 +16,7 @@ addons:
     - postgresql-11-postgis-2.5-scripts
 
 before_install:
-  - createdb --encoding=UTF8 --locale=en_US.UTF-8 --template=template0 --owner=maposmatic l10n
+  - createdb --encoding=UTF8 --locale=en_US.UTF-8 --template=template0 l10n
   - psql --command="CREATE EXTENSION fuzzystrmatch"
   - psql --command="CREATE EXTENSION unaccent"
   - psql --command="CREATE EXTENSION postgis"
