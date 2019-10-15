@@ -26,7 +26,7 @@ install:
   - cd ${TRAVIS_BUILD_DIR}
   - sudo make install
   - psql --dbname=gis --command="CREATE EXTENSION osml10n"
-  - psql --dbname=gis --command="CREATE EXTENSION osml10n_thai_transcript"
+  - psql --dbname=gis --command="CREATE EXTENSION osml10n_thai_transcript CASCADE"
 
 script:
   - cd ${TRAVIS_BUILD_DIR}/tests
