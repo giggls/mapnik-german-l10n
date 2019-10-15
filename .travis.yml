@@ -19,6 +19,7 @@ before_install:
   - psql --command="CREATE EXTENSION fuzzystrmatch"
   - psql --command="CREATE EXTENSION unaccent"
   - psql --command="CREATE EXTENSION postgis"
+  - psql --command="CREATE EXTENSION hstore"
 
 install:
   - cd ${TRAVIS_BUILD_DIR}
