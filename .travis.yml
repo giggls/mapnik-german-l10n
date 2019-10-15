@@ -17,15 +17,15 @@ addons:
 
 before_install:
   - createdb --encoding=UTF8 --locale=en_US.UTF-8 --template=template0 l10n
-  - psql --command="CREATE EXTENSION fuzzystrmatch"
-  - psql --command="CREATE EXTENSION unaccent"
-  - psql --command="CREATE EXTENSION postgis"
-  - psql --command="CREATE EXTENSION hstore"
+  - psql --dbname=gis --command="CREATE EXTENSION fuzzystrmatch"
+  - psql --dbname=gis --command="CREATE EXTENSION unaccent"
+  - psql --dbname=gis --command="CREATE EXTENSION postgis"
+  - psql --dbname=gis --command="CREATE EXTENSION hstore"
 
 install:
   - cd ${TRAVIS_BUILD_DIR}
   - sudo make install
-  - psql --command="CREATE EXTENSION osml10n"
+  - psql --dbname=gis --command="CREATE EXTENSION osml10n"
 
 script:
   - cd ${TRAVIS_BUILD_DIR}/tests
