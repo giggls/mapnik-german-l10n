@@ -15,12 +15,12 @@ addons:
     - postgresql-plpython3-11
     - python3-pip
     - python3-setuptools
+    - python3-matplotlib
     - postgresql-11-postgis-2.5
     - postgresql-11-postgis-2.5-scripts
 
 before_install:
   - sudo pip3 install tltk
-  - sudo pip3 install python3-matplotlib
   - createdb --encoding=UTF8 --locale=en_US.UTF-8 --template=template0 gis
   - psql --dbname=gis --command="CREATE EXTENSION fuzzystrmatch"
   - psql --dbname=gis --command="CREATE EXTENSION unaccent"
