@@ -20,6 +20,7 @@ addons:
 
 before_install:
   - sudo pip3 install tltk
+  - sudo pip3 install python3-matplotlib
   - createdb --encoding=UTF8 --locale=en_US.UTF-8 --template=template0 gis
   - psql --dbname=gis --command="CREATE EXTENSION fuzzystrmatch"
   - psql --dbname=gis --command="CREATE EXTENSION unaccent"
