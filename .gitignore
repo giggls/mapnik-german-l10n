@@ -17,3 +17,5 @@ debian/files
 country_languages.data
 debian/.debhelper
 country_osm_grid.sql
+thaitranscript/__pycache__
+thaitranscript/osml10n_thai_transcript.py

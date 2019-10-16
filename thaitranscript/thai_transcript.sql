@@ -1,11 +1,11 @@
 /*
 
-Thai to Latin transcription code via PyThaiNLP library
-https://github.com/PyThaiNLP/pythainlp
+Thai to Latin transcription code via Thai language processing package
+https://pypi.org/project/tltk/
 
 Hopefully using Royal Thai General System of Transcription (RTGS)
 
-(c) 2018 Sven Geggus <svn-osm@geggus.net>
+(c) 2018-2019 Sven Geggus <svn-osm@geggus.net>
 
 */
 
@@ -30,24 +30,23 @@ CREATE or REPLACE FUNCTION osml10n_thai_transcript(inpstr text) RETURNS TEXT AS 
     return(strlist)
   
   try:
-    import pythainlp
+    import tltk
   except:
-    plpy.notice("pythainlp not installed, falling back to ICU")
+    plpy.notice("tltk not installed, falling back to ICU")
     return(None)
   
   stlist=split_by_alphabet(inpstr)
-  
+
   latin = ''
   for st in stlist:
     if (unicodedata.name(st[0]).split(' ')[0] == 'THAI'):
-      transcript=[]
-      for w in pythainlp.word_tokenize(st):
-        try:
-          transcript.append(pythainlp.romanize(w))
-        except:
-          plpy.notice("thainlp error transcribing >%s<" % w)
-          return(None)
-      latin=latin+' '.join(transcript)
+      transcript=''
+      try:
+        transcript=tltk.nlp.th2roman(st).rstrip('<s/>').rstrip()
+      except:
+        plpy.notice("thainlp error transcribing >%s<" % st)
+        return(None)
+      latin=latin+transcript
     else:
       latin=latin+st
   return(latin)

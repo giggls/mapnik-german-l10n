@@ -57,7 +57,7 @@ res=$(psql -X -t -A $DB <<EOF
 select osml10n_thai_transcript('thai ถนนข้าวสาร 100');
 EOF
 )
-printresult "$res" "thai thnn khaotan 100"
+printresult "$res" "thai thanon khawsan 100"
 
 echo "calling select osml10n_translit('Москва́');"
 res=$(psql -X -t -A $DB <<EOF
@@ -105,12 +105,12 @@ EOF
 )
 printresult "$res" "dōng jīng"
 
-echo "calling select osml10n_geo_translit('ถนนข้าวสาร',ST_GeomFromText('POINT(100 16)', 4326));"
+echo "calling select osml10n_geo_translit('ห้องสมุดประชาชน',ST_GeomFromText('POINT(100 16)', 4326));"
 res=$(psql -X -t -A $DB <<EOF
-select osml10n_geo_translit('ถนนข้าวสาร',ST_GeomFromText('POINT(100 16)', 4326));
+select osml10n_geo_translit('ห้องสมุดประชาชน',ST_GeomFromText('POINT(100 16)', 4326));
 EOF
 )
-printresult "$res" "thnn khaotan"
+printresult "$res" "hongsamut prachachon"
 
 echo "select osml10n_get_placename_from_tags('"name"=>"Москва́","name:de"=>"Moskau","name:en"=>"Moscow"',true,false, ' - ');"
 res=$(psql -X -t -A $DB <<EOF
