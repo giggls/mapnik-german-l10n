@@ -210,6 +210,25 @@ EOF
 )
 printresult "$res" "Doktor-No-Straße"
 
+IFS=,
+echo "---- English abbreviations, data from en_test.csv ----"
+while read nameIn nameExpected
+do
+  stmt="select osml10n_get_streetname_from_tags('\"name\"=>\"${nameIn}\"',false);"
+  echo ${stmt}
+  res=$(psql -X -t -A $DB -c "${stmt}")
+  printresult "$res" "${nameExpected}"
+done < en_tests.csv
+
+echo "---- French abbreviations, data from fr_test.csv ----"
+while read nameIn nameExpected
+do
+  stmt="select osml10n_get_streetname_from_tags('\"name\"=>\"${nameIn}\"',false);"
+  echo ${stmt}
+  res=$(psql -X -t -A $DB -c "${stmt}")
+  printresult "$res" "${nameExpected}"
+done < fr_tests.csv
+
 echo "select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');
