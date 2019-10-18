@@ -29,8 +29,10 @@ make deb
 
 To make this work you will need to install the required libraries:
 
+```sh
 sudo apt-get install devscripts equivs
 sudo mk-build-deps -i debian/control
+```     
 
 On other Distributions it should work to use `make`/`make install`, given the
 required libraries listed in `debian/control` have been installed.
