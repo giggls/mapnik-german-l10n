@@ -20,7 +20,7 @@ To install the l10n into your database the following steps are requered:
 ### 1. Install the libraries for the C/C++ stored procedures
 
 
-The easiest way to to this on Debian/Ubuntu is to build packages and install
+The easiest way to do this on Debian/Ubuntu is to build packages and install
 them:
 
 ```sh
