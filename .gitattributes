@@ -1,1 +1,4 @@
 country_osm_grid.sql filter=lfs diff=lfs merge=lfs -text
+
+# Force LF for all text files, as vagrant runs on Linux
+* text=auto eol=lf
