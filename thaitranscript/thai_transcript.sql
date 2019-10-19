@@ -44,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_thai_transcript(inpstr text) RETURNS TEXT AS 
       try:
         transcript=tltk.nlp.th2roman(st).rstrip('<s/>').rstrip()
       except:
-        plpy.notice("thainlp error transcribing >%s<" % st)
+        plpy.notice("tltk error transcribing >%s<" % st)
         return(None)
       latin=latin+transcript
     else:

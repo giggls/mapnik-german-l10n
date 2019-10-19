@@ -57,7 +57,14 @@ res=$(psql -X -t -A $DB <<EOF
 select osml10n_thai_transcript('thai ถนนข้าวสาร 100');
 EOF
 )
-printresult "$res" "thai thanon khawsan 100"
+printresult "$res" "thai thanon khaosan 100"
+
+echo "calling select osml10n_thai_transcript('ห้องสมุดประชาชน');"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_thai_transcript('ห้องสมุดประชาชน');
+EOF
+)
+printresult "$res" "hongsamut prachachon"
 
 echo "calling select osml10n_translit('Москва́');"
 res=$(psql -X -t -A $DB <<EOF
@@ -74,8 +81,6 @@ select osml10n_translit('漢字 100 abc');
 EOF
 )
 printresult "$res" "hàn zì 100 abc"
-
-
 
 echo "calling select osml10n_get_country(ST_GeomFromText('POINT(9 49)', 4326));"
 res=$(psql -X -t -A $DB <<EOF
@@ -160,7 +165,7 @@ EOF
 printresult "$res" "‪Brixen|Bressanone‬"
 
 # This is a fictual tagging as I do not know of an italian speaking town
-# wehre the names are that similar
+# where the names are that similar
 echo "select osml10n_get_placename_from_tags('"name"=>"Merano - Meran","name:de"=>"Meran","name:it"=>"Merano"',true,false, '|') as name;"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_placename_from_tags('"name"=>"Merano - Meran","name:de"=>"Meran","name:it"=>"Merano"',true,false, '|') as name;
@@ -181,13 +186,6 @@ select osml10n_get_placename_from_tags('"name"=>"Roma","name:de"=>"Rom"',false,f
 EOF
 )
 printresult "$res" "‪Rom|Roma‬"
-
-echo "select osml10n_get_streetname_from_tags('"name"=>"Doktor-No-Straße"',false);"
-res=$(psql -X -t -A $DB <<EOF
-select osml10n_get_streetname_from_tags('"name"=>"Doktor-No-Straße"',false);
-EOF
-)
-printresult "$res" "Dr.-No-Str."
 
 echo "select osml10n_get_streetname_from_tags('"name"=>"Dr. No Street","name:de"=>"Professor-Doktor-No-Straße"',false);"
 res=$(psql -X -t -A $DB <<EOF
@@ -211,7 +209,17 @@ EOF
 printresult "$res" "Doktor-No-Straße"
 
 IFS=,
-echo "---- English abbreviations, data from en_test.csv ----"
+echo -e "\n---- German abbreviations, data from de_test.csv ----"
+while read nameIn nameExpected
+do
+  stmt="select osml10n_get_streetname_from_tags('\"name\"=>\"${nameIn}\"',false);"
+  echo ${stmt}
+  res=$(psql -X -t -A $DB -c "${stmt}")
+  printresult "$res" "${nameExpected}"
+done < de_tests.csv
+
+IFS=,
+echo -e "\n---- English abbreviations, data from en_test.csv ----"
 while read nameIn nameExpected
 do
   stmt="select osml10n_get_streetname_from_tags('\"name\"=>\"${nameIn}\"',false);"
@@ -220,7 +228,7 @@ do
   printresult "$res" "${nameExpected}"
 done < en_tests.csv
 
-echo "---- French abbreviations, data from fr_test.csv ----"
+echo -e "\n---- French abbreviations, data from fr_test.csv ----"
 while read nameIn nameExpected
 do
   stmt="select osml10n_get_streetname_from_tags('\"name\"=>\"${nameIn}\"',false);"
@@ -229,6 +237,8 @@ do
   printresult "$res" "${nameExpected}"
 done < fr_tests.csv
 
+echo
+
 echo "select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');
@@ -236,6 +246,7 @@ EOF
 )
 printresult "$res" "‪ул. Воздвиженка (Vozdvizhenka St.)‬"
 
+#  Russian language
 echo "select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка"',true,true,' ','de');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка"',true,true,' ','de');
@@ -243,6 +254,7 @@ EOF
 )
 printresult "$res" "‪ул. Воздвиженка (ul. Vozdviženka)‬"
 
+# Belarusian language (AFAIK)
 echo "select osml10n_get_streetname_from_tags('"name"=>"вулиця Молока"',true,false,' - ','de');"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_get_streetname_from_tags('"name"=>"вулиця Молока"',true,false,' - ','de');
