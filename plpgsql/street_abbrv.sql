@@ -161,6 +161,101 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
+--
+-- Name: fr_abbrev(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+CREATE OR REPLACE FUNCTION fr_abbrev(longtext) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+    abbrev = longtext;
+    abbrev = replace($abbrev,'lémentaire ','lem. ');
+    abbrev = replace($abbrev, 'econdaire ','econd. ');
+    abbrev = replace($abbrev, 'rimaire ','rim. ');
+    abbrev = replace($abbrev, 'aternelle ','at. ');
+    abbrev = replace($abbrev, 'ommerciale ','omm. ');
+    abbrev = replace($abbrev, 'Direction ','Dir. ');
+    abbrev = replace($abbrev, 'Chapelle ','Chap. ');
+    abbrev = replace($abbrev, 'Cathédrale ','Cath. ');
+    abbrev = replace($abbrev, ' Notre-Dame ',' N.D. ');
+
+    abbrev = replace($abbrev, 'Avenue ','Av. ');
+    abbrev = replace($abbrev, 'Boulevard ','Bd. ');
+    abbrev = replace($abbrev, 'Esplanade ','Espl. ');
+    abbrev = replace($abbrev, 'Faubourg ','Fbg. ');
+    abbrev = replace($abbrev, 'Passage ','Pass. ');
+    abbrev = replace($abbrev, 'Place ','Pl. ');
+    abbrev = replace($abbrev, 'Promenade ','Prom. ');
+    abbrev = replace($abbrev, 'Impasse ','Imp. ');
+
+    abbrev = replace($abbrev, 'Square ','Sq. ');
+
+    abbrev = replace($abbrev, 'Centre Commercial ','CCial. ');
+    abbrev = replace($abbrev, 'Immeuble ','Imm. ');
+    abbrev = replace($abbrev, 'Lotissement ','Lot. ');
+    abbrev = replace($abbrev, 'Résidence ','Rés. ');
+    abbrev = replace($abbrev, 'Zone Industrielle ','ZI. ');
+    abbrev = replace($abbrev, 'Adjudant ','Adj. ');
+    abbrev = replace($abbrev, 'Agricole ','Agric. ');
+    abbrev = replace($abbrev, 'Arrondissement','Arrond.');
+    abbrev = replace($abbrev, 'Aspirant ','Asp. ');
+    abbrev = replace($abbrev, 'Colonel ','Col. ');
+    abbrev = replace($abbrev, 'Commandant ','Cdt. ');
+    abbrev = replace($abbrev, 'Commercial ','Cial. ');
+    abbrev = replace($abbrev, 'Coopérative ','Coop. ');
+    abbrev = replace($abbrev, 'Division ','Div. ');
+    abbrev = replace($abbrev, 'Docteur ','Dr. ');
+    abbrev = replace($abbrev, 'Général ','Gén. ');
+    abbrev = replace($abbrev, 'Institut ','Inst. ');
+    abbrev = replace($abbrev, 'Faculté ','Fac. ');
+    abbrev = replace($abbrev, 'Laboratoire ','Labo. ');
+    abbrev = replace($abbrev, 'Lieutenant ','Lt. ');
+    abbrev = replace($abbrev, 'Maréchal ','Mal. ');
+    abbrev = replace($abbrev, 'Ministère ','Min. ');
+    abbrev = replace($abbrev, 'Monseigneur ','Mgr. ');
+    abbrev = replace($abbrev, 'Médiathèque ','Médiat. ');
+    abbrev = replace($abbrev, 'Bibliothèque ','Bibl. ');
+    abbrev = replace($abbrev, 'Tribunal ','Trib. ');
+    abbrev = replace($abbrev, 'Observatoire ','Obs. ');
+    abbrev = replace($abbrev, 'Périphérique ','Périph. ');
+    abbrev = replace($abbrev, 'Préfecture ','Préf. ');
+    abbrev = replace($abbrev, 'Président ','Pdt. ');
+    abbrev = replace($abbrev, 'Régiment ','Rgt. ');
+    abbrev = replace($abbrev, 'Saint-','Sᵗ-');
+    abbrev = replace($abbrev, 'Sainte-','Sᵗᵉ-');
+    abbrev = replace($abbrev, 'Sergent ','Sgt. ');
+    abbrev = replace($abbrev, 'Université ','Univ. ');
+
+    abbrev = regexp_replace($abbrev, 'Communauté d.[Aa]gglomération','Comm. d''agglo. ');
+    abbrev = regexp_replace($abbrev, 'Communauté [Uu]rbaine ','Comm. urb. ');
+    abbrev = regexp_replace($abbrev, 'Communauté de [Cc]ommunes ','Comm. comm. ');
+    abbrev = regexp_replace($abbrev, 'Syndicat d.[Aa]gglomération ','Synd. d''agglo. ');
+    abbrev = regexp_replace($abbrev, '^Chemin ','Ch. ');
+    abbrev = regexp_replace($abbrev, '^Institut ','Inst. ');
+    abbrev = regexp_replace($abbrev, 'Zone d.[Aa]ctivité.? [Éeée]conommique.? ','Z.A.E. ');
+    abbrev = regexp_replace($abbrev, 'Zone d.[Aa]ctivité.? ','Z.A. ');
+    abbrev = regexp_replace($abbrev, 'Zone [Aa]rtisanale ','Zone Art. ');
+    abbrev = regexp_replace($abbrev, 'Zone [Ii]ndustrielle ','Z.I. ');
+    abbrev = regexp_replace($abbrev, ' [Pp]ubli(c|que) ',' Publ. ');
+    abbrev = regexp_replace($abbrev, ' [Pp]rofessionnel(|le) ',' Prof. ');
+    abbrev = regexp_replace($abbrev, ' [Tt]echnologique ',' Techno. ');
+    abbrev = regexp_replace($abbrev, ' [Pp]olyvalent ',' Polyv. ');
+    abbrev = regexp_replace($abbrev, '[EÉeé]tablissement(|s) ','Éts. ');
+    abbrev = regexp_replace($abbrev, ' [Mm]unicipal(|e) ',' Munic. ');
+    abbrev = regexp_replace($abbrev, ' [Dd]épartemental(|e) ',' Départ. ');
+    abbrev = regexp_replace($abbrev, ' [Ii]ntercommunal(|le) ',' Interco. ');
+    abbrev = regexp_replace($abbrev, ' [Rr]égional(|e) ',' Région. ');
+    abbrev = regexp_replace($abbrev, ' [Ii]nterdépartemental(|e) ',' Interdép. ');
+    abbrev = regexp_replace($abbrev, ' [Hh]ospitali(er|ère) ',' Hospit. ');
+    abbrev = regexp_replace($abbrev, ' [EÉeé]lectrique ',' Élect. ');
+    abbrev = regexp_replace($abbrev, ' [Ss]upérieur(|e) ',' Sup. ');
+    abbrev = regexp_replace($abbrev, '^[Bb][aâ]timent ','Bât. ');
+    abbrev = regexp_replace($abbrev, '[Aa]éronautique ','Aéron. ');
+
+    return abbrev;
+    
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
 /* 
    helper function "osml10n_street_abbrev_es"
    replaces some common parts of spanish street names with their abbreviation

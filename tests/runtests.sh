@@ -208,6 +208,13 @@ EOF
 )
 printresult "$res" "Doktor-No-Straße"
 
+echo "select fr_abbrev('"name:de"=>"Université Doktor-No-Straße"','de',NULL,'Dr. No Street');"
+res=$(psql -X -t -A $DB <<EOF
+select fr_abbrev('"name:de"=>"Université Doktor-No-Straße"','de',NULL,'Dr. No Street');
+EOF
+)
+printresult "$res" "Iniv. Doktor-No-Straße"
+
 IFS=,
 echo -e "\n---- German abbreviations, data from de_test.csv ----"
 while read nameIn nameExpected
