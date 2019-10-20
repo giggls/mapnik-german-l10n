@@ -1,3 +1,9 @@
+osml10n (2.5.7) unstable; urgency=medium
+
+  * Merge patch to add french street abbreviation 
+
+ -- Sven Geggus <sven-debian@geggus.net>  Sat, 19 Oct 2019 10:45:31 +0200
+
 osml10n (2.5.6) unstable; urgency=medium
 
   * Fix osml10n_thai_transcript to work with newer version of pythainlp (currently 2.0.5)
