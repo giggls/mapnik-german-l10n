@@ -8,7 +8,7 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
-SCRIPTS=thaitranscript/*
+SCRIPTS=thaitranscript/*.sql
 
 (
 echo "-- complain if script is sourced in psql, rather than via CREATE EXTENSION"
