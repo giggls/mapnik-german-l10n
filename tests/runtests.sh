@@ -9,6 +9,8 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
+cd $(dirname "$0")
+
 # check if commands we need are available
 for cmd in psql uconv; do
   if ! command -v $cmd >/dev/null; then
