@@ -10,8 +10,8 @@ Standards-Version: 3.9.2
 
 Package: postgresql-11-osml10n
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-11
-Recommends: postgresql-plpython3-11, python3-matplotlib
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-11, icu-devtools
+Recommends: postgresql-plpython3-11, python3-matplotlib, python3-pip, postgis
 Description: l10n package for generation of OSM based maps from PostGIS
  localisation package  for generation of OSM based maps from PostGIS.
  This is currently used in german mapnik style but can be used in a
