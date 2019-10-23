@@ -1,0 +1,37 @@
+# * build postgresql-*-osml10n_*_amd64.deb
+# * run tests for the osml10n and osml10n_thai_transcript
+image: debian:10
+
+variables:
+  LANG: C.UTF-8
+
+build:
+  stage: build
+  # instead of calling g++ directly you can also use some build toolkit like make
+  # install the necessary build tools when needed
+  before_script:
+     - apt-get update
+     - apt-get -y install devscripts equivs
+     - mk-build-deps -t "apt-get -y" -i debian/control
+  script: 
+    - make deb
+    - mkdir build
+    - mv ../*.deb ../*.buildinfo ../*.changes build
+  artifacts:
+    paths:
+      - build/postgresql-*-osml10n_*.deb
+  tags:
+    - IAD
+
+# run tests using the binary built before
+test:
+  stage: test
+  before_script:
+     - apt-get update
+     - apt-get -y install ./build/postgresql-*-osml10n_*_amd64.deb
+     - pip3 install tltk
+  script:
+    - ./tests/runtests_in_virtualenv.sh
+  tags:
+    - IAD
+
