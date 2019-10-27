@@ -239,6 +239,15 @@ do
   printresult "$res" "${nameExpected}"
 done < fr_tests.csv
 
+echo -e "\n---- Dutch abbreviations, data from nl_test.csv ----"
+while read nameIn nameExpected
+do
+  stmt="select osml10n_get_streetname_from_tags('\"name\"=>\"${nameIn}\"',false);"
+  echo ${stmt}
+  res=$(psql -X -t -A $DB -c "${stmt}")
+  printresult "$res" "${nameExpected}"
+done < nl_tests.csv
+
 echo
 
 echo "select osml10n_get_streetname_from_tags('"name"=>"улица Воздвиженка","name:en"=>"Vozdvizhenka Street"',true,true,' ','de');"

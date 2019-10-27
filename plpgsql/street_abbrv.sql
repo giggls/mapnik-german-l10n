@@ -53,6 +53,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT
   abbrev=osml10n_street_abbrev_en(longname);
   abbrev=osml10n_street_abbrev_de(abbrev);
   abbrev=osml10n_street_abbrev_fr(abbrev);
+  abbrev=osml10n_street_abbrev_nl(abbrev);
   abbrev=osml10n_street_abbrev_ru(abbrev);
   abbrev=osml10n_street_abbrev_uk(abbrev);
   return abbrev;
@@ -69,9 +70,10 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TE
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=osml10n_street_abbrev_en(abbrev);
-  abbrev=osml10n_street_abbrev_de(longname);
+  abbrev=osml10n_street_abbrev_en(longname);
+  abbrev=osml10n_street_abbrev_de(abbrev);
   abbrev=osml10n_street_abbrev_fr(abbrev);
+  abbrev=osml10n_street_abbrev_nl(abbrev);
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -180,6 +182,22 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_pt(longname text) RETURNS TEXT AS $$
  BEGIN
   return longname;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "osml10n_street_abbrev_pt"
+   replaces some common parts of portuguese street names with their abbreviation
+   currently just a stub :(
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_nl(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=longname;
+  abbrev=regexp_replace(abbrev,'straat\M','str.');
+  abbrev=regexp_replace(abbrev,'Sint\M','St.');
+  return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
