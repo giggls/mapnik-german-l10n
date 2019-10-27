@@ -62,15 +62,15 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 /* 
    helper function "osml10n_street_abbrev_all_latin"
    call all latin osml10n_street_abbrev functions
-   These are currently: english and german
+   These are currently: english, german and french
    
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=osml10n_street_abbrev_en(abbrev);
-  abbrev=osml10n_street_abbrev_de(longname);
+  abbrev=osml10n_street_abbrev_en(longname);
+  abbrev=osml10n_street_abbrev_de(abbrev);
   abbrev=osml10n_street_abbrev_fr(abbrev);
   return abbrev;
  END;
