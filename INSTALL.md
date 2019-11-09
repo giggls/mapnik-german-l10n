@@ -95,7 +95,7 @@ yourdb=# select osml10n_kanji_transcript('漢字');
 yourdb=# select osml10n_thai_transcript('ถนนข้าวสาร');
  osml10n_thai_transcript
 ---------------------
- thanon khawsan
+ thanon khaosan
  (1 row)
 ```
 
