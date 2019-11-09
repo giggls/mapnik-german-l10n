@@ -56,13 +56,16 @@ for f in $SCRIPTS; do
   cat $f >>osml10n--$2.sql
 done
 echo "-- country_osm_grid.sql -----------------------------------------------------------------" >>osml10n--$2.sql
-sed '/^COPY.*$/,/^\\\.$/d;//d' country_osm_grid.sql |grep -v -e '^--' |grep -v 'CREATE INDEX' | cat -s >>osml10n--$2.sql
-echo -e "COPY country_osm_grid (country_code, area, geometry) FROM '$1/osml10n_country_osm_grid.data';\n"  >>osml10n--$2.sql
+sed -e '/^COPY.*$/,/^\\\.$/d;//d' -e 's/CREATE TABLE country_osm_grid/CREATE TABLE IF NOT EXISTS country_osm_grid/g' country_osm_grid.sql |grep -v -e '^--' |grep -v 'CREATE INDEX' | cat -s >>osml10n--$2.sql
+echo "DELETE from country_osm_grid;" >>osml10n--$2.sql
+echo -e "COPY country_osm_grid (country_code, area, geometry) FROM '$1/osml10n_country_osm_grid.data';\n" >>osml10n--$2.sql
+echo -e "DROP INDEX IF EXISTS idx_country_osm_grid_geometry;" >>osml10n--$2.sql
 grep 'CREATE INDEX' country_osm_grid.sql  >>osml10n--$2.sql
 echo "GRANT SELECT on country_osm_grid to public;" >>osml10n--$2.sql
 
 echo -e "\n-- country_languages table from http://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes -----------------------------" >>osml10n--$2.sql
-echo "CREATE TABLE country_languages(iso text, langs text[]);" >>osml10n--$2.sql
+echo "CREATE TABLE IF NOT EXISTS country_languages(iso text, langs text[]);" >>osml10n--$2.sql
+echo "DELETE from country_languages;" >>osml10n--$2.sql
 echo "COPY country_languages (iso, langs) FROM '$1/country_languages.data';"  >>osml10n--$2.sql
 echo -e "GRANT SELECT on country_languages to public;\n" >>osml10n--$2.sql
 

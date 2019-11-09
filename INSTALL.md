@@ -64,8 +64,16 @@ CREATE EXTENSION osml10n CASCADE;
 CREATE EXTENSION osml10n_thai_transcript CASCADE;
 ```
 
+If you already installed the previous version of this software use:
+```sql
+ALTER EXTENSION osml10n UPDATE;
+ALTER EXTENSION osml10n_thai_transcript UPDATE;
+```
 
-Afterwards you should be able to do the following:
+**WARNING: This will only work from the previous version to the
+current version, not across multiple versions.**
+
+After installing or updating the extension you should be able to do the following:
 
 ```sql
 yourdb=# select osml10n_translit('北京');
@@ -87,12 +95,11 @@ yourdb=# select osml10n_kanji_transcript('漢字');
 yourdb=# select osml10n_thai_transcript('ถนนข้าวสาร');
  osml10n_thai_transcript
 ---------------------
- thnn khaotan
+ thanon khawsan
  (1 row)
 ```
 
 To check if everything went well run the test script provided in the
 tests/runtests_in_virtualenv.sh directory. As this test uses pg_virtualenv
 it is not required to create a database to run the test.
-
 

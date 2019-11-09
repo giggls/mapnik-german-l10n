@@ -4,8 +4,7 @@
 *.tar.gz
 *_*.changes
 *.deb
-README.html
-INSTALL.html
+*.html
 README
 INSTALL
 osml10n_country_osm_grid.data

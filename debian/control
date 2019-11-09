@@ -10,6 +10,9 @@ Standards-Version: 3.9.2
 
 Package: postgresql-11-osml10n
 Architecture: any
+# "postgis" is used as some kind of meta package here, because it
+# contains all dependencies for whatever version of PostGIS is available
+# on the Debian or Ubuntu intallation this code is going to get built
 Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-11, icu-devtools
 Recommends: postgresql-plpython3-11, python3-matplotlib, python3-pip, postgis
 Description: l10n package for generation of OSM based maps from PostGIS
