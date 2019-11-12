@@ -4,8 +4,8 @@ DIR=$(dirname "$0")
 
 # re-run us in pg_virtualenv if we do not already
 if [ -z "$PGSYSCONFDIR" ]; then
-  pg_virtualenv $0
-  exit 0
+  # exec this because we are interested in the return value of pg_virtualenv
+  exec pg_virtualenv $0
 fi
 
 createdb osml10n
