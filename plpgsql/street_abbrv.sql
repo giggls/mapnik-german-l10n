@@ -62,7 +62,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 /* 
    helper function "osml10n_street_abbrev_all_latin"
    call all latin osml10n_street_abbrev functions
-   These are currently: english, german and french
+   These are currently: English, German and French
    
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
@@ -79,7 +79,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 /* 
    helper function "osml10n_street_abbrev_non_latin"
    call all non latin osml10n_street_abbrev functions
-   These are currently: russian, ukrainian
+   These are currently: Russian, Ukrainian
    
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
@@ -96,7 +96,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "osml10n_street_abbrev_de"
-   replaces some common parts of german street names with their abbr
+   replaces some common parts of German street names with their abbr
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_de(longname text) RETURNS TEXT AS $$
  DECLARE
@@ -139,7 +139,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "osml10n_street_abbrev_fr"
-   replaces some common parts of french street names with their abbreviation
+   replaces some common parts of French street names with their abbreviation
    Main source: https://www.canadapost.ca/tools/pg/manual/PGaddress-f.asp#1460716
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT AS $$
@@ -147,7 +147,13 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
   abbrev text;
  BEGIN
   abbrev=longname;
+  /* We assume, that in French "Avenue" is always at the beginning of the name
+     otherwise this is likely English. */
   abbrev=regexp_replace(abbrev,'^Avenue\M','Av.');
+  /* These are also French names and Avenue is not at the beginning of the Name
+     those apear in French speaking parts of canada */
+  abbrev=regexp_replace(abbrev,'^([0-9]+)e Avenue\M','\1e Av.');
+  abbrev=regexp_replace(abbrev,'^^1[eè]?re Avenue\M','1re Av.');
   abbrev=regexp_replace(abbrev,'^Boulevard\M','Bd');
   abbrev=regexp_replace(abbrev,'^Chemin\M','Ch.');
   abbrev=regexp_replace(abbrev,'^Esplanade\M','Espl.');
@@ -163,7 +169,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "osml10n_street_abbrev_es"
-   replaces some common parts of spanish street names with their abbreviation
+   replaces some common parts of Spanish street names with their abbreviation
    currently just a stub :(
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_es(longname text) RETURNS TEXT AS $$
@@ -174,7 +180,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "osml10n_street_abbrev_pt"
-   replaces some common parts of portuguese street names with their abbreviation
+   replaces some common parts of Portuguese street names with their abbreviation
    currently just a stub :(
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_pt(longname text) RETURNS TEXT AS $$
@@ -185,7 +191,7 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
 /* 
    helper function "osml10n_street_abbrev_en"
-   replaces some common parts of english street names with their abbreviation
+   replaces some common parts of English street names with their abbreviation
    Most common abbreviations extracted from:
    http://www.ponderweasel.com/whats-the-difference-between-an-ave-rd-st-ln-dr-way-pl-blvd-etc/
 */
@@ -194,7 +200,14 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
   abbrev text;
  BEGIN
   abbrev=longname;
-  abbrev=regexp_replace(abbrev,'(?!^)Avenue\M','Ave.');
+  /* Avenue is a special case because we must try to e xclude french names */
+  IF (position('Avenue' IN abbrev) >0) THEN
+    IF regexp_match(abbrev, '^1[eè]?re Avenue\M') IS NULL THEN
+      IF regexp_match(abbrev, '^[0-9]+e Avenue\M') IS NULL THEN
+        abbrev=regexp_replace(abbrev,'(?!^)Avenue\M','Ave.');
+      END IF;
+    END IF;
+  END IF;
   abbrev=regexp_replace(abbrev,'(?!^)Boulevard\M','Blvd.');
   abbrev=regexp_replace(abbrev,'Crescent\M','Cres.');
   abbrev=regexp_replace(abbrev,'Court\M','Ct');

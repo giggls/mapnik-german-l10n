@@ -1,3 +1,10 @@
+osml10n (2.5.8) unstable; urgency=medium
+
+  * Abbreviation for "1re Avenue" and "Xe Avenue" in French
+    canadian cities should be French (Av.) not English (Ave.)
+
+ -- Sven Geggus <sven-debian@geggus.net>  Tue, 12 Nov 2019 13:23:35 +0100
+
 osml10n (2.5.7) unstable; urgency=medium
 
   * Merge patch to add french street abbreviation 
