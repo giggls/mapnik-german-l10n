@@ -1,11 +1,11 @@
 ## Software requirements:
 
 * GNU/Linux OS
-* Postgresql 8.x - 11.x, PostGIS 2.x
+* Postgresql 10 or newer, PostGIS 2 or newer
 * Kanji Kana Simple Inverter library (http://kakasi.namazu.org/)
 * ICU - International Components for Unicode library (http://site.icu-project.org/)
 
-This code is developed on Debian 9.x and should also work on Debian
+This code is developed on Debian 10.x and should also work on Debian
 derivatives like Ubuntu and other GNU/Linux distributions.
 
 If you are on Debian or Ubuntu all required libraries should be installed from
