@@ -151,9 +151,10 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
      otherwise this is likely English. */
   abbrev=regexp_replace(abbrev,'^Avenue\M','Av.');
   /* These are also French names and Avenue is not at the beginning of the Name
-     those apear in French speaking parts of canada */
+     those apear in French speaking parts of canada 
+     + Normalize ^1ere, ^1re, ^1e to 1re */  
+  abbrev=regexp_replace(abbrev,'^1([eè]?r?)e Avenue\M','1re Av.');
   abbrev=regexp_replace(abbrev,'^([0-9]+)e Avenue\M','\1e Av.');
-  abbrev=regexp_replace(abbrev,'^^1[eè]?re Avenue\M','1re Av.');
   abbrev=regexp_replace(abbrev,'^Boulevard\M','Bd');
   abbrev=regexp_replace(abbrev,'^Chemin\M','Ch.');
   abbrev=regexp_replace(abbrev,'^Esplanade\M','Espl.');
@@ -201,13 +202,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
  BEGIN
   abbrev=longname;
   /* Avenue is a special case because we must try to e xclude french names */
-  IF (position('Avenue' IN abbrev) >0) THEN
-    IF regexp_match(abbrev, '^1[eè]?re Avenue\M') IS NULL THEN
-      IF regexp_match(abbrev, '^[0-9]+e Avenue\M') IS NULL THEN
-        abbrev=regexp_replace(abbrev,'(?!^)Avenue\M','Ave.');
-      END IF;
-    END IF;
-  END IF;
+  abbrev=regexp_replace(abbrev,'(?<!^([0-9]+([èe]?r)?e )?)Avenue\M','Ave.');
   abbrev=regexp_replace(abbrev,'(?!^)Boulevard\M','Blvd.');
   abbrev=regexp_replace(abbrev,'Crescent\M','Cres.');
   abbrev=regexp_replace(abbrev,'Court\M','Ct');
