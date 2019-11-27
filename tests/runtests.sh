@@ -98,6 +98,20 @@ EOF
 )
 printresult "$res" "th"
 
+echo "calling select osml10n_get_country(ST_GeomFromText('POINT(114.2 22.3)', 4326));"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_country(ST_GeomFromText('POINT(114.2 22.3)', 4326));
+EOF
+)
+printresult "$res" "hk"
+
+echo "calling select osml10n_get_country(ST_GeomFromText('POINT(113.6 22.2)', 4326));"
+res=$(psql -X -t -A $DB <<EOF
+select osml10n_get_country(ST_GeomFromText('POINT(113.6 22.2)', 4326));
+EOF
+)
+printresult "$res" "mo"
+
 echo "calling select osml10n_geo_translit('東京',ST_GeomFromText('POINT(140 40)', 4326));"
 res=$(psql -X -t -A $DB <<EOF
 select osml10n_geo_translit('東京',ST_GeomFromText('POINT(140 40)', 4326));

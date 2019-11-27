@@ -67,6 +67,8 @@ echo -e "\n-- country_languages table from http://wiki.openstreetmap.org/wiki/No
 echo "CREATE TABLE IF NOT EXISTS country_languages(iso text, langs text[]);" >>osml10n--$2.sql
 echo "DELETE from country_languages;" >>osml10n--$2.sql
 echo "COPY country_languages (iso, langs) FROM '$1/country_languages.data';"  >>osml10n--$2.sql
+# for now we need to force srid here because boundaries/hkmo2psql.py does not include srid in geometry output
+echo -e "UPDATE country_osm_grid SET geometry=ST_SetSRID(geometry,4326);\n" >>osml10n--$2.sql
 echo -e "GRANT SELECT on country_languages to public;\n" >>osml10n--$2.sql
 
 echo "
@@ -79,3 +81,5 @@ CREATE or REPLACE FUNCTION osml10n_version() RETURNS TEXT AS \$\$
 " >>osml10n--$2.sql
 
 sed '/^COPY.*$/,/^\\\.$/!d;//d'  country_osm_grid.sql >osml10n_country_osm_grid.data
+cat boundaries/boundaries.data >>osml10n_country_osm_grid.data
+

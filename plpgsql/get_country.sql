@@ -27,7 +27,8 @@ CREATE or REPLACE FUNCTION osml10n_get_country(feature geometry) RETURNS TEXT AS
  BEGIN
    SELECT country_code into country
    from country_osm_grid
-   where st_contains(geometry, st_centroid(st_transform(feature,4326)));
+   where st_contains(geometry, st_centroid(st_transform(feature,4326)))
+   order by area limit 1;
    return country;
  END;
 $$ LANGUAGE 'plpgsql' STABLE;
