@@ -60,13 +60,13 @@ osml10n--$(EXTVERSION).sql: plpgsql/*.sql country_languages.data
 	./gen_osml10n_extension.sh $(EXTDIR)/extension $(EXTVERSION)
 
 osml10n--$(EXTVERSION_OLD)--$(EXTVERSION).sql: osml10n--$(EXTVERSION).sql
-	tail +3 $< >$@
+	tail -n +3 $< >$@
 
 osml10n_thai_transcript--$(EXTVERSION).sql: thaitranscript/*.sql
 	./gen_osml10n_thai_extension.sh $(EXTDIR)/extension $(EXTVERSION)
 	
 osml10n_thai_transcript--$(EXTVERSION_OLD)--$(EXTVERSION).sql: osml10n_thai_transcript--$(EXTVERSION).sql
-	tail +3 $< >$@
+	tail -n +3 $< >$@
 
 osml10n.control: osml10n--$(EXTVERSION).sql osml10n--$(EXTVERSION_OLD)--$(EXTVERSION).sql
 	sed -e "s/VERSION/$(EXTVERSION)/g" osml10n.control.in >$@
