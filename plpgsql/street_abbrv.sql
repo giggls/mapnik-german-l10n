@@ -46,18 +46,14 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    These are currently russian, english and german
    
 */
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT AS $$
- DECLARE
-  abbrev text;
- BEGIN
-  abbrev=osml10n_street_abbrev_en(longname);
-  abbrev=osml10n_street_abbrev_de(abbrev);
-  abbrev=osml10n_street_abbrev_fr(abbrev);
-  abbrev=osml10n_street_abbrev_ru(abbrev);
-  abbrev=osml10n_street_abbrev_uk(abbrev);
-  return abbrev;
- END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+CREATE OR REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT AS $$
+ SELECT
+  CASE WHEN osml10n_contains_cyrillic(longname) THEN
+    osml10n_street_abbrev_non_latin(longname)
+  ELSE
+    osml10n_street_abbrev_latin(longname)
+  END;
+$$ LANGUAGE SQL IMMUTABLE;
 
 /* 
    helper function "osml10n_street_abbrev_all_latin"
@@ -142,29 +138,37 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    replaces some common parts of French street names with their abbreviation
    Main source: https://www.canadapost.ca/tools/pg/manual/PGaddress-f.asp#1460716
 */
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT AS $$
  DECLARE
-  abbrev text;
+  match text[];
  BEGIN
-  abbrev=longname;
-  /* We assume, that in French "Avenue" is always at the beginning of the name
-     otherwise this is likely English. */
-  abbrev=regexp_replace(abbrev,'^Avenue\M','Av.');
-  /* These are also French names and Avenue is not at the beginning of the Name
-     those apear in French speaking parts of canada 
-     + Normalize ^1ere, ^1re, ^1e to 1re */  
-  abbrev=regexp_replace(abbrev,'^1([eè]?r?)e Avenue\M','1re Av.');
-  abbrev=regexp_replace(abbrev,'^([0-9]+)e Avenue\M','\1e Av.');
-  abbrev=regexp_replace(abbrev,'^Boulevard\M','Bd');
-  abbrev=regexp_replace(abbrev,'^Chemin\M','Ch.');
-  abbrev=regexp_replace(abbrev,'^Esplanade\M','Espl.');
-  abbrev=regexp_replace(abbrev,'^Impasse\M','Imp.');
-  abbrev=regexp_replace(abbrev,'^Passage\M','Pass.');
-  abbrev=regexp_replace(abbrev,'^Promenade\M','Prom.');
-  abbrev=regexp_replace(abbrev,'^Route\M','Rte');
-  abbrev=regexp_replace(abbrev,'^Ruelle\M','Rle');
-  abbrev=regexp_replace(abbrev,'^Sentier\M','Sent.');
-  return abbrev;
+  IF strpos(longname, 'Avenue') > 0 THEN
+    /* These are also French names and Avenue is not at the beginning of the Name
+      those apear in French speaking parts of canada
+      + Normalize ^1ere, ^1re, ^1e to 1re */
+    longname = regexp_replace(longname, '^1([eè]?r?)e Avenue\M','1re Av.');
+    longname = regexp_replace(longname, '^([0-9]+)e Avenue\M','\1e Av.');
+  END IF;
+
+  match = regexp_match(longname, '^(Avenue|Boulevard|Chemin|Esplanade|Impasse|Passage|Promenade|Route|Ruelle|Sentier)\M');
+  IF match IS NOT NULL THEN
+    longname = CASE match[1]
+      /* We assume, that in French "Avenue" is always at the beginning of the name
+          otherwise this is likely English. */
+      WHEN 'Avenue' THEN 'Av.'
+      WHEN 'Boulevard' THEN 'Bd'
+      WHEN 'Chemin' THEN 'Ch.'
+      WHEN 'Esplanade' THEN 'Espl.'
+      WHEN 'Impasse' THEN 'Imp.'
+      WHEN 'Passage' THEN 'Pass.'
+      WHEN 'Promenade' THEN 'Prom.'
+      WHEN 'Route' THEN 'Rte'
+      WHEN 'Ruelle' THEN 'Rle'
+      WHEN 'Sentier' THEN 'Sent.'
+    END || substr(longname, length(match[1]) + 1);
+  END IF;
+
+  RETURN longname;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
@@ -196,38 +200,51 @@ $$ LANGUAGE 'plpgsql' IMMUTABLE;
    Most common abbreviations extracted from:
    http://www.ponderweasel.com/whats-the-difference-between-an-ave-rd-st-ln-dr-way-pl-blvd-etc/
 */
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT AS $$
  DECLARE
-  abbrev text;
+  match text[];
  BEGIN
-  abbrev=longname;
-  /* Avenue is a special case because we must try to e xclude french names */
-  abbrev=regexp_replace(abbrev,'(?<!^([0-9]+([èe]?r)?e )?)Avenue\M','Ave.');
-  abbrev=regexp_replace(abbrev,'(?!^)Boulevard\M','Blvd.');
-  abbrev=regexp_replace(abbrev,'Crescent\M','Cres.');
-  abbrev=regexp_replace(abbrev,'Court\M','Ct');
-  abbrev=regexp_replace(abbrev,'Drive\M','Dr.');
-  abbrev=regexp_replace(abbrev,'Lane\M','Ln.');
-  abbrev=regexp_replace(abbrev,'Place\M','Pl.');
-  abbrev=regexp_replace(abbrev,'Road\M','Rd.');
-  abbrev=regexp_replace(abbrev,'Street\M','St.');
-  abbrev=regexp_replace(abbrev,'Square\M','Sq.');
+  IF strpos(longname, 'Avenue') >= 0 THEN
+    /* Avenue is a special case because we must try to e xclude french names */
+    longname = regexp_replace(longname, '(?<!^([0-9]+([èe]?r)?e )?)Avenue\M','Ave.');
+  END IF;
+  IF strpos(longname, 'Boulevard') >= 0 THEN
+    longname = regexp_replace(longname, '(?!^)Boulevard\M','Blvd.');
+  END IF;
 
-  abbrev=regexp_replace(abbrev,'Expressway\M','Expy');
-  abbrev=regexp_replace(abbrev,'Freeway\M','Fwy');
-  abbrev=regexp_replace(abbrev,'Parkway\M','Pkwy');
+  match = regexp_match(longname, '(Boulevard|Crescent|Court|Drive|Lane|Place|Road|Street|Square|Expressway|Freeway|Parkway)\M');
+  IF match IS NOT NULL THEN
+    longname = replace(longname, match[1], CASE match[1]
+      WHEN 'Crescent' THEN 'Cres.'
+      WHEN 'Court' THEN 'Ct'
+      WHEN 'Drive' THEN 'Dr.'
+      WHEN 'Lane' THEN 'Ln.'
+      WHEN 'Place' THEN 'Pl.'
+      WHEN 'Road' THEN 'Rd.'
+      WHEN 'Street' THEN 'St.'
+      WHEN 'Square' THEN 'Sq.'
 
-  abbrev=regexp_replace(abbrev,'North\M','N');
-  abbrev=regexp_replace(abbrev,'South\M','S');
-  abbrev=regexp_replace(abbrev,'West\M', 'W');
-  abbrev=regexp_replace(abbrev,'East\M', 'E');
+      WHEN 'Expressway' THEN 'Expy'
+      WHEN 'Freeway' THEN 'Fwy'
+      WHEN 'Parkway' THEN 'Pkwy'
+    END);
+  END IF;
 
-  abbrev=regexp_replace(abbrev,'Northwest\M', 'NW');
-  abbrev=regexp_replace(abbrev,'Northeast\M', 'NE');
-  abbrev=regexp_replace(abbrev,'Southwest\M', 'SW');
-  abbrev=regexp_replace(abbrev,'Southeast\M', 'SE');
+  match = regexp_match(longname, '(North|South|West|East|Northwest|Northeast|Southwest|Southeast)\M');
+  IF match IS NOT NULL THEN
+    longname = replace(longname, match[1], CASE match[1]
+      WHEN 'North' THEN 'N'
+      WHEN 'South' THEN 'S'
+      WHEN 'West' THEN 'W'
+      WHEN 'East' THEN 'E'
+      WHEN 'Northwest' THEN 'NW'
+      WHEN 'Northeast' THEN 'NE'
+      WHEN 'Southwest' THEN 'SW'
+      WHEN 'Southeast' THEN 'SE'
+    END);
+  END IF;
 
-  return abbrev;
+  RETURN longname;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
 
@@ -241,14 +258,14 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_ru(longname text) RETURNS TEXT 
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=regexp_replace(longname,'переулок','пер.');
-  abbrev=regexp_replace(abbrev,'тупик','туп.');
-  abbrev=regexp_replace(abbrev,'улица','ул.');
-  abbrev=regexp_replace(abbrev,'бульвар','бул.');
-  abbrev=regexp_replace(abbrev,'площадь','пл.');
-  abbrev=regexp_replace(abbrev,'проспект','просп.');
-  abbrev=regexp_replace(abbrev,'спуск','сп.');
-  abbrev=regexp_replace(abbrev,'набережная','наб.');
+  abbrev=replace(longname,'переулок','пер.');
+  abbrev=replace(abbrev,'тупик','туп.');
+  abbrev=replace(abbrev,'улица','ул.');
+  abbrev=replace(abbrev,'бульвар','бул.');
+  abbrev=replace(abbrev,'площадь','пл.');
+  abbrev=replace(abbrev,'проспект','просп.');
+  abbrev=replace(abbrev,'спуск','сп.');
+  abbrev=replace(abbrev,'набережная','наб.');
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -261,14 +278,14 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_uk(longname text) RETURNS TEXT 
  DECLARE
   abbrev text;
  BEGIN
-  abbrev=regexp_replace(longname,'провулок','пров.');
-  abbrev=regexp_replace(abbrev,'тупик','туп.');
-  abbrev=regexp_replace(abbrev,'вулиця','вул.');
-  abbrev=regexp_replace(abbrev,'бульвар','бул.');
-  abbrev=regexp_replace(abbrev,'площа','пл.');
-  abbrev=regexp_replace(abbrev,'проспект','просп.');
-  abbrev=regexp_replace(abbrev,'спуск','сп.');
-  abbrev=regexp_replace(abbrev,'набережна','наб.');
+  abbrev=replace(longname,'провулок','пров.');
+  abbrev=replace(abbrev,'тупик','туп.');
+  abbrev=replace(abbrev,'вулиця','вул.');
+  abbrev=replace(abbrev,'бульвар','бул.');
+  abbrev=replace(abbrev,'площа','пл.');
+  abbrev=replace(abbrev,'проспект','просп.');
+  abbrev=replace(abbrev,'спуск','сп.');
+  abbrev=replace(abbrev,'набережна','наб.');
   return abbrev;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
