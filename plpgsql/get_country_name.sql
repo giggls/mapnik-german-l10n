@@ -77,4 +77,4 @@ CREATE or REPLACE FUNCTION osml10n_get_country_name(tags hstore, separator text 
   END IF;
   return array_to_string(names,separator);
  END;
-$$ LANGUAGE 'plpgsql' STABLE;
+$$ LANGUAGE 'plpgsql' STABLE PARALLEL SAFE;

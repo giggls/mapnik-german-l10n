@@ -24,7 +24,7 @@ CREATE or REPLACE FUNCTION osml10n_is_latin(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_contains_cjk"
@@ -44,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_contains_cjk(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /*
    helper function "osml10n_contains_cyrillic"
@@ -64,7 +64,7 @@ CREATE or REPLACE FUNCTION osml10n_contains_cyrillic(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_gen_combined_name"
@@ -264,7 +264,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
    END IF;
   END IF;
  END;
-$combined$ LANGUAGE 'plpgsql' IMMUTABLE;
+$combined$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 
 /*
@@ -355,7 +355,7 @@ CREATE or REPLACE FUNCTION osml10n_get_name_from_tags(tags hstore,
      return NULL;
    END IF;
  END;
-$$ LANGUAGE 'plpgsql' STABLE;
+$$ LANGUAGE 'plpgsql' STABLE PARALLEL SAFE;
 
 CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hstore,
                                                                        targetlang text DEFAULT 'de',
@@ -420,7 +420,7 @@ CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hsto
      return NULL;
    END IF;
  END;
-$$ LANGUAGE 'plpgsql' STABLE;
+$$ LANGUAGE 'plpgsql' STABLE PARALLEL SAFE;
 
 /*
 
@@ -442,7 +442,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
 
    return(osml10n_get_name_from_tags(tags,loc_in_brackets,false,show_brackets,separator,targetlang,place));
  END;
-$$ LANGUAGE 'plpgsql' STABLE;
+$$ LANGUAGE 'plpgsql' STABLE PARALLEL SAFE;
 
 
 CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, 
@@ -459,4 +459,4 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
    END IF;
    return(osml10n_get_name_from_tags(tags,loc_in_brackets,true,show_brackets,separator,targetlang,place));
  END;
-$$ LANGUAGE 'plpgsql' STABLE;
+$$ LANGUAGE 'plpgsql' STABLE PARALLEL SAFE;

@@ -38,7 +38,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) R
   WHEN undefined_function THEN
    return longname;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_all"
@@ -53,7 +53,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT
   ELSE
     osml10n_street_abbrev_latin(longname)
   END;
-$$ LANGUAGE SQL IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_all_latin"
@@ -70,7 +70,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TE
   abbrev=osml10n_street_abbrev_fr(abbrev);
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_non_latin"
@@ -86,7 +86,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURN
   abbrev=osml10n_street_abbrev_uk(abbrev);
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 
 
@@ -131,7 +131,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_de(longname text) RETURNS TEXT 
   END IF;
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_fr"
@@ -170,7 +170,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
 
   RETURN longname;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_es"
@@ -181,7 +181,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_es(longname text) RETURNS TEXT 
  BEGIN
   return longname;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_pt"
@@ -192,7 +192,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_pt(longname text) RETURNS TEXT 
  BEGIN
   return longname;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_en"
@@ -246,7 +246,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
 
   RETURN longname;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 
 
@@ -268,7 +268,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_ru(longname text) RETURNS TEXT 
   abbrev=replace(abbrev,'набережная','наб.');
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 /* 
    helper function "osml10n_street_abbrev_uk"
@@ -288,4 +288,4 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev_uk(longname text) RETURNS TEXT 
   abbrev=replace(abbrev,'набережна','наб.');
   return abbrev;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
