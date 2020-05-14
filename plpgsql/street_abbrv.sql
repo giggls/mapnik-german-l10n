@@ -14,6 +14,39 @@ Street abbreviation functions
 */
 
 /* 
+   helper function "osml10n_street_abbrev_all_latin"
+   call all latin osml10n_street_abbrev functions
+   These are currently: English, German and French
+   
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=osml10n_street_abbrev_en(longname);
+  abbrev=osml10n_street_abbrev_de(abbrev);
+  abbrev=osml10n_street_abbrev_fr(abbrev);
+  return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
+   helper function "osml10n_street_abbrev_non_latin"
+   call all non latin osml10n_street_abbrev functions
+   These are currently: Russian, Ukrainian
+   
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
+ DECLARE
+  abbrev text;
+ BEGIN
+  abbrev=osml10n_street_abbrev_ru(longname);
+  abbrev=osml10n_street_abbrev_uk(abbrev);
+  return abbrev;
+ END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+/* 
    helper function "osml10n_street_abbrev"
    will call the osml10n_street_abbrev function of the given language if available
    and return the unmodified input otherwise   
@@ -54,41 +87,6 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT
     osml10n_street_abbrev_latin(longname)
   END;
 $$ LANGUAGE SQL IMMUTABLE;
-
-/* 
-   helper function "osml10n_street_abbrev_all_latin"
-   call all latin osml10n_street_abbrev functions
-   These are currently: English, German and French
-   
-*/
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
- DECLARE
-  abbrev text;
- BEGIN
-  abbrev=osml10n_street_abbrev_en(longname);
-  abbrev=osml10n_street_abbrev_de(abbrev);
-  abbrev=osml10n_street_abbrev_fr(abbrev);
-  return abbrev;
- END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
-
-/* 
-   helper function "osml10n_street_abbrev_non_latin"
-   call all non latin osml10n_street_abbrev functions
-   These are currently: Russian, Ukrainian
-   
-*/
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
- DECLARE
-  abbrev text;
- BEGIN
-  abbrev=osml10n_street_abbrev_ru(longname);
-  abbrev=osml10n_street_abbrev_uk(abbrev);
-  return abbrev;
- END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
-
-
 
 /* 
    helper function "osml10n_street_abbrev_de"

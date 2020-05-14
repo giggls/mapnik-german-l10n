@@ -31,7 +31,7 @@ if ! [ -f "country_osm_grid.sql" ]; then
   fi
 fi
 
-SCRIPTS=plpgsql/*
+SCRIPTS="geo_transliterate.sql get_country_name.sql get_country.sql charset_helpers.sql street_abbrv.sql get_localized_name_from_tags.sql"
 
 (
 echo "-- complain if script is sourced in psql, rather than via CREATE EXTENSION"
@@ -50,10 +50,9 @@ echo "'\$libdir/osml10n_translit', 'osml10n_translit'"
 echo "LANGUAGE C STRICT;" ) >>osml10n--$2.sql
 
 for f in $SCRIPTS; do
-  bn=$(basename $f)
   echo "" >>osml10n--$2.sql
-  echo "-- pl/pgSQL code from file $bn -----------------------------------------------------------------" >>osml10n--$2.sql
-  cat $f >>osml10n--$2.sql
+  echo "-- pl/pgSQL code from file $f -----------------------------------------------------------------" >>osml10n--$2.sql
+  cat plpgsql/$f >>osml10n--$2.sql
 done
 echo "-- country_osm_grid.sql -----------------------------------------------------------------" >>osml10n--$2.sql
 sed -e '/^COPY.*$/,/^\\\.$/d;//d' -e 's/CREATE TABLE country_osm_grid/CREATE TABLE IF NOT EXISTS country_osm_grid/g' country_osm_grid.sql |grep -v -e '^--' |grep -v 'CREATE INDEX' | cat -s >>osml10n--$2.sql
