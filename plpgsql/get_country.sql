@@ -14,11 +14,11 @@ http://www.nominatim.org/data/country_grid.sql.gz
 example call:
 
 yourdb=# select osml10n_get_country(ST_GeomFromText('POINT(9 49)', 4326));
- get_country 
+ get_country
  -------------
   de
   (1 row)
-  
+
 */
 
 CREATE or REPLACE FUNCTION osml10n_get_country(feature geometry) RETURNS TEXT AS $$
@@ -31,4 +31,4 @@ CREATE or REPLACE FUNCTION osml10n_get_country(feature geometry) RETURNS TEXT AS
    order by area limit 1;
    return country;
  END;
-$$ LANGUAGE 'plpgsql' STABLE;
+$$ LANGUAGE 'plpgsql' STABLE STRICT;
