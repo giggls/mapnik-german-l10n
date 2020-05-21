@@ -160,7 +160,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
       WHEN 'Sentier' THEN 'Sent.'
     END || substr(longname, length(match[1]) + 1);
   END IF;
-  
+
   RETURN longname;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE COST 20;
@@ -262,7 +262,7 @@ $$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev_uk(longname text) RETURNS TEXT AS
 $$
- SELECT replace(replace(replace(replace(replace(replace(replace(
+ SELECT replace(replace(replace(replace(replace(replace(replace(replace(
    longname,
    'провулок', 'пров.'),
    'тупик', 'туп.'),
