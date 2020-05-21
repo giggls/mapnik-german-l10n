@@ -140,7 +140,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
  DECLARE
   match text[];
  BEGIN
-  IF strpos(longname, 'Avenue') > 0 THEN
+  IF strpos(longname, 'Avenue') > 1 THEN
     /* These are also French names and Avenue is not at the beginning of the Name
       those apear in French speaking parts of canada
       + Normalize ^1ere, ^1re, ^1e to 1re */
@@ -165,7 +165,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
       WHEN 'Sentier' THEN 'Sent.'
     END || substr(longname, length(match[1]) + 1);
   END IF;
-
+  
   RETURN longname;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -202,15 +202,15 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
  DECLARE
   match text[];
  BEGIN
-  IF strpos(longname, 'Avenue') >= 0 THEN
+  IF strpos(longname, 'Avenue') > 1 THEN
     /* Avenue is a special case because we must try to e xclude french names */
     longname = regexp_replace(longname, '(?<!^([0-9]+([èe]?r)?e )?)Avenue\M','Ave.');
   END IF;
-  IF strpos(longname, 'Boulevard') >= 0 THEN
+  IF strpos(longname, 'Boulevard') > 1 THEN
     longname = regexp_replace(longname, '(?!^)Boulevard\M','Blvd.');
   END IF;
 
-  match = regexp_match(longname, '(Boulevard|Crescent|Court|Drive|Lane|Place|Road|Street|Square|Expressway|Freeway|Parkway)\M');
+  match = regexp_match(longname, '(Crescent|Court|Drive|Lane|Place|Road|Street|Square|Expressway|Freeway|Parkway)\M');
   IF match IS NOT NULL THEN
     longname = replace(longname, match[1], CASE match[1]
       WHEN 'Crescent' THEN 'Cres.'
