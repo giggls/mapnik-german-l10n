@@ -1,4 +1,4 @@
-#  OSM map l10n functions
+#  OSM map l10n functions ![CI](https://github.com/giggls/mapnik-german-l10n/workflows/CI/badge.svg)
 ## (from german mapnik style)
 
 All l10n functions from german mapnik style are implemented as PL/pgSQL stored procedures
