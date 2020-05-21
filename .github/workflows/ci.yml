@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+
+  ci:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    env:
+      LANG: C.UTF-8
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: src
+
+      - name: Init
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install devscripts equivs python3-setuptools
+          cd src
+          sudo mk-build-deps -t "apt-get -y" -i debian/control
+
+      - name: Build
+        run: |
+          cd src
+          make deb
+          mkdir build
+          mv ../*.deb ../*.buildinfo ../*.changes build
+
+      - name: Save results
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: src/build
+
+      - name: Test
+        run: |
+          cd src
+          sudo apt-get -y install ./build/postgresql-*-osml10n_*_amd64.deb
+          pip3 install tltk
+          ./tests/runtests_in_virtualenv.sh
