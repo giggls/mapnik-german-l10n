@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # generate psql extension "osml10n"
 # from plpgsql scripts
@@ -43,17 +43,12 @@ echo "CREATE OR REPLACE FUNCTION osml10n_kanji_transcript(text)RETURNS text AS"
 echo "'\$libdir/osml10n_kanjitranscript', 'osml10n_kanji_transcript'"
 echo "LANGUAGE C STRICT;"
 echo
-echo "-- enable libkakasi based kanji transcription function -----------------------------------------------------------------" 
+echo "-- enable libkakasi based kanji transcription function -----------------------------------------------------------------"
 echo
 echo "CREATE OR REPLACE FUNCTION osml10n_translit(text)RETURNS text AS"
 echo "'\$libdir/osml10n_translit', 'osml10n_translit'"
 echo "LANGUAGE C STRICT;" ) >>osml10n--$2.sql
 
-for f in $SCRIPTS; do
-  echo "" >>osml10n--$2.sql
-  echo "-- pl/pgSQL code from file $f -----------------------------------------------------------------" >>osml10n--$2.sql
-  cat plpgsql/$f >>osml10n--$2.sql
-done
 echo "-- country_osm_grid.sql -----------------------------------------------------------------" >>osml10n--$2.sql
 sed -e '/^COPY.*$/,/^\\\.$/d;//d' -e 's/CREATE TABLE country_osm_grid/CREATE TABLE IF NOT EXISTS country_osm_grid/g' country_osm_grid.sql |grep -v -e '^--' |grep -v 'CREATE INDEX' | cat -s >>osml10n--$2.sql
 echo "DELETE from country_osm_grid;" >>osml10n--$2.sql
@@ -69,6 +64,12 @@ echo "COPY country_languages (iso, langs) FROM '$1/country_languages.data';"  >>
 # for now we need to force srid here because boundaries/hkmo2psql.py does not include srid in geometry output
 echo -e "UPDATE country_osm_grid SET geometry=ST_SetSRID(geometry,4326);\n" >>osml10n--$2.sql
 echo -e "GRANT SELECT on country_languages to public;\n" >>osml10n--$2.sql
+
+for f in $SCRIPTS; do
+  echo "" >>osml10n--$2.sql
+  echo "-- pl/pgSQL code from file $f -----------------------------------------------------------------" >>osml10n--$2.sql
+  cat plpgsql/$f >>osml10n--$2.sql
+done
 
 echo "
 -- function osml10n_version  -----------------------------------------------------------------
