@@ -14,41 +14,13 @@ Street abbreviation functions
 */
 
 /*
-   helper function "osml10n_street_abbrev_all_latin"
-   call all latin osml10n_street_abbrev functions
-   These are currently: English, German and French
-
-*/
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
- SELECT
-   osml10n_street_abbrev_fr(
-     osml10n_street_abbrev_de(
-       osml10n_street_abbrev_en(
-         longname)));
-$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
-
-
-/*
-   helper function "osml10n_street_abbrev_non_latin"
-   call all non latin osml10n_street_abbrev functions
-   These are currently: Russian, Ukrainian
-
-*/
-CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
- SELECT
-   osml10n_street_abbrev_uk(
-     osml10n_street_abbrev_ru(
-       longname));
-$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
-
-/*
    helper function "osml10n_street_abbrev"
    will call the osml10n_street_abbrev function of the given language if available
    and return the unmodified input otherwise
 */
 CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) RETURNS TEXT AS $$
  DECLARE
-  call text;
+  stmt text;
   func text;
   result text;
  BEGIN
@@ -59,29 +31,14 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) R
     return longname;
   END IF;
   func ='osml10n_street_abbrev_'|| langcode;
-  call = 'select ' || func || '(' || quote_nullable(longname) || ')';
-  execute call into result;
+  stmt = 'select ' || func || '(' || quote_nullable(longname) || ')';
+  execute stmt into result;
   return result;
  EXCEPTION
   WHEN undefined_function THEN
    return longname;
  END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
-
-/*
-   helper function "osml10n_street_abbrev_all"
-   call all osml10n_street_abbrev functions
-   These are currently russian, english and german
-
-*/
-CREATE OR REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT AS $$
- SELECT
-  CASE WHEN osml10n_contains_cyrillic(longname) THEN
-    osml10n_street_abbrev_non_latin(longname)
-  ELSE
-    osml10n_street_abbrev_latin(longname)
-  END;
-$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
 
 /*
    helper function "osml10n_street_abbrev_de"
@@ -272,4 +229,48 @@ $$
    'проспект', 'просп.'),
    'спуск', 'сп.'),
    'набережна', 'наб.');
+$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
+
+/*
+   helper function "osml10n_street_abbrev_all_latin"
+   call all latin osml10n_street_abbrev functions
+   These are currently: English, German and French
+
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_latin(longname text) RETURNS TEXT AS $$
+SELECT
+    osml10n_street_abbrev_fr(
+            osml10n_street_abbrev_de(
+                    osml10n_street_abbrev_en(
+                            longname)));
+$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
+
+
+/*
+   helper function "osml10n_street_abbrev_non_latin"
+   call all non latin osml10n_street_abbrev functions
+   These are currently: Russian, Ukrainian
+
+*/
+CREATE or REPLACE FUNCTION osml10n_street_abbrev_non_latin(longname text) RETURNS TEXT AS $$
+SELECT
+    osml10n_street_abbrev_uk(
+            osml10n_street_abbrev_ru(
+                    longname));
+$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
+
+
+/*
+   helper function "osml10n_street_abbrev_all"
+   call all osml10n_street_abbrev functions
+   These are currently russian, english and german
+
+*/
+CREATE OR REPLACE FUNCTION osml10n_street_abbrev_all(longname text) RETURNS TEXT AS $$
+SELECT
+    CASE WHEN osml10n_contains_cyrillic(longname) THEN
+             osml10n_street_abbrev_non_latin(longname)
+         ELSE
+             osml10n_street_abbrev_latin(longname)
+        END;
 $$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE COST 20;
