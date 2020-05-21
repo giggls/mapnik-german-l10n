@@ -66,7 +66,7 @@ CREATE or REPLACE FUNCTION osml10n_street_abbrev(longname text, langcode text) R
   WHEN undefined_function THEN
    return longname;
  END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE COST 20;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
 /*
    helper function "osml10n_street_abbrev_all"

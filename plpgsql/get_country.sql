@@ -31,4 +31,4 @@ CREATE or REPLACE FUNCTION osml10n_get_country(feature geometry) RETURNS TEXT AS
    order by area limit 1;
    return country;
  END;
-$$ LANGUAGE 'plpgsql' STABLE STRICT;
+$$ LANGUAGE 'plpgsql' STABLE STRICT PARALLEL SAFE;

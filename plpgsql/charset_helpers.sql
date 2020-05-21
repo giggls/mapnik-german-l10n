@@ -24,7 +24,7 @@ CREATE or REPLACE FUNCTION osml10n_is_latin(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
 /*
    helper function "osml10n_contains_cjk"
@@ -44,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_contains_cjk(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
 /*
    helper function "osml10n_contains_cyrillic"
@@ -64,4 +64,4 @@ CREATE or REPLACE FUNCTION osml10n_contains_cyrillic(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
