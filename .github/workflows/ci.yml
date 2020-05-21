@@ -24,6 +24,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install devscripts equivs python3-setuptools
           cd src
+          pg_buildext updatecontrol
           sudo mk-build-deps -t "apt-get -y" -i debian/control
 
       - name: Build
