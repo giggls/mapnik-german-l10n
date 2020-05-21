@@ -59,8 +59,6 @@ CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAUL
         ELSE
           return osml10n_translit(name);
       END CASE;
-
-      return osml10n_translit(name);
     END IF;
   END;
 $$ LANGUAGE plpgsql STABLE;
