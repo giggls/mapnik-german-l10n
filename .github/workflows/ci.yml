@@ -43,5 +43,5 @@ jobs:
         run: |
           cd src
           sudo apt-get -y install ./build/postgresql-*-osml10n_*_amd64.deb
-          pip3 install tltk
+          pip3 install tltk wheel
           ./tests/runtests_in_virtualenv.sh
