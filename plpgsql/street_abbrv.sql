@@ -148,7 +148,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_fr(longname text) RETURNS TEXT 
     longname = regexp_replace(longname, '^([0-9]+)e Avenue\M','\1e Av.');
   END IF;
 
-  match = regexp_match(longname, '^(Avenue|Boulevard|Chemin|Esplanade|Impasse|Passage|Promenade|Route|Ruelle|Sentier)\M');
+  match = regexp_matches(longname, '^(Avenue|Boulevard|Chemin|Esplanade|Impasse|Passage|Promenade|Route|Ruelle|Sentier)\M');
   IF match IS NOT NULL THEN
     longname = CASE match[1]
       /* We assume, that in French "Avenue" is always at the beginning of the name
@@ -210,7 +210,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
     longname = regexp_replace(longname, '(?!^)Boulevard\M','Blvd.');
   END IF;
 
-  match = regexp_match(longname, '(Crescent|Court|Drive|Lane|Place|Road|Street|Square|Expressway|Freeway|Parkway)\M');
+  match = regexp_matches(longname, '(Crescent|Court|Drive|Lane|Place|Road|Street|Square|Expressway|Freeway|Parkway)\M');
   IF match IS NOT NULL THEN
     longname = replace(longname, match[1], CASE match[1]
       WHEN 'Crescent' THEN 'Cres.'
@@ -228,7 +228,7 @@ CREATE OR REPLACE FUNCTION osml10n_street_abbrev_en(longname text) RETURNS TEXT 
     END);
   END IF;
 
-  match = regexp_match(longname, '(North|South|West|East|Northwest|Northeast|Southwest|Southeast)\M');
+  match = regexp_matches(longname, '(North|South|West|East|Northwest|Northeast|Southwest|Southeast)\M');
   IF match IS NOT NULL THEN
     longname = replace(longname, match[1], CASE match[1]
       WHEN 'North' THEN 'N'
