@@ -26,19 +26,19 @@ The following functions are provided for use in map rendering:
 
 
 __`osml10n_get_placename_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT chr(10), targetlang text DEFAULT 'de', place geometry DEFAULT NULL, name text DEFAULT NULL)`__
-:	Will try its best to return a usable name pair with both a localiced name and an on site name
+:	Will try its best to return a usable name pair with both a localized name and an on site name
 
 __`osml10n_get_streetname_from_tags(tags hstore, loc_in_brackets boolean, show_brackets boolean DEFAULT false, separator text DEFAULT ' - ', targetlang text DEFAULT 'de', place geometry DEFAULT NULL, name text DEFAULT NULL)`__
 :	Same as get_localized_placename_from_tags, but with some common abbreviations for street names (Straße->Str.), if name ist longer than 15 characters
 
 __`osml10n_get_name_without_brackets_from_tags(tags hstore, loc_in_brackets boolean, targetlang text DEFAULT 'de', place geometry DEFAULT NULL, name text DEFAULT NULL)`__
-:	Produces localiced name only output (on site name will be discarded)
+:	Produces localized name only output (on site name will be discarded)
 
 __`osml10n_get_country_name(tags hstore, separator text DEFAULT chr(10), targetlang text DEFAULT 'de')`__
 :	Generate a combined country name from name:xx tags (targetlang plus official languages of the country)
 
 
-A convinient way of using these functions is to hide them behind virtual colums using database views.
+A convenient way of using these functions is to hide them behind virtual columns using database views.
 
 ### Examples
 
