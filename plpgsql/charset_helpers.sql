@@ -9,7 +9,7 @@ https://github.com/giggls/openstreetmap-carto-de
 Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 */
 
-/* 
+/*
    helper function "osml10n_is_latin"
    checks if string consists of latin characters only
 */
@@ -24,9 +24,9 @@ CREATE or REPLACE FUNCTION osml10n_is_latin(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN true;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
-/* 
+/*
    helper function "osml10n_contains_cjk"
   checks if string contains CJK characters
   = 0x4e00-0x9FFF in unicode table
@@ -44,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_contains_cjk(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
 /*
    helper function "osml10n_contains_cyrillic"
@@ -64,4 +64,4 @@ CREATE or REPLACE FUNCTION osml10n_contains_cyrillic(text) RETURNS BOOLEAN AS $$
     END LOOP;
     RETURN false;
   END;
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;

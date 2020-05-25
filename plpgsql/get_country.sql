@@ -27,4 +27,4 @@ CREATE or REPLACE FUNCTION osml10n_get_country(feature geometry) RETURNS TEXT AS
  where st_contains(geometry, st_centroid(st_transform(feature,4326)))
  order by area
  limit 1;
-$$ LANGUAGE SQL STABLE;
+$$ LANGUAGE SQL STABLE STRICT PARALLEL SAFE;
