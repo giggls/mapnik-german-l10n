@@ -12,6 +12,7 @@ debian/postgresql-*-osml10n*
 debian/debhelper-build-stamp
 *--*.sql
 *.control
+debian/control
 debian/files
 country_languages.data
 debian/.debhelper
