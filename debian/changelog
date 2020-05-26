@@ -1,6 +1,8 @@
 osml10n (2.5.9) unstable; urgency=medium
 
-  * reduce number of regular expressions used to make usable again.
+  * Reduce number of regular expressions used to fix performance problem
+  * Merge a couple of patches, mostly speed improvements by Yuri Astrakhan
+  * Get rid of regexp_match for backward compatibility
 
  -- Sven Geggus <sven-debian@geggus.net>  Thu, 14 May 2020 17:57:26 +0200
 
