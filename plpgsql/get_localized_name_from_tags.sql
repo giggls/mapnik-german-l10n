@@ -9,9 +9,29 @@ https://github.com/giggls/openstreetmap-carto-de
 Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
 */
 
+/*
+  helper function "osml10n_format_combined_name"
+  Format an array of two strings into a string which can be rendered on the map
+*/
+
+CREATE or REPLACE FUNCTION osml10n_format_combined_name(names text[2],show_brackets boolean DEFAULT true,separator text DEFAULT ' ') RETURNS TEXT AS $cname$
+ BEGIN
+  IF (names[1] = '') THEN return names[2]; END IF;
+  IF (names[2] = '') THEN return names[1]; END IF;
+  
+  -- explicitely mark the whole string as LTR
+  IF ( show_brackets ) THEN
+    return chr(8234)||names[1]||separator||'('||names[2]||')'||chr(8236);
+  ELSE
+    return chr(8234)||names[1]||separator||names[2]||chr(8236);
+  END IF;
+ END;
+$cname$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+
 /* 
-   helper function "osml10n_gen_combined_name"
-   Will create a name+local_name pair
+   helper function "osml10n_gen_combined_names"
+   Will create a name+local_name pair as array of two strings
    
    In case use_tags is true the combination might be re-created manually
    from a name:xx tag using the requested separator instad of name
@@ -20,14 +40,12 @@ Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
    name and local_name must contain the desired tag not the actual name string itself
    
 */       
-CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
+CREATE or REPLACE FUNCTION osml10n_gen_combined_names(local_name text,
                                                      tags hstore,
-                                                     loc_in_brackets boolean,
-                                                     show_brackets boolean DEFAULT true,
-                                                     separator text DEFAULT ' ',
+                                                     localized_name_second boolean,
                                                      is_street boolean DEFAULT false,
                                                      use_tags boolean DEFAULT false,
-                                                     non_latin boolean DEFAULT false) RETURNS TEXT AS $combined$
+                                                     non_latin boolean DEFAULT false) RETURNS TEXT[2] AS $combined$
  DECLARE
    nobrackets boolean;
    found boolean;
@@ -41,17 +59,29 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
    n text;
    ln text;
    pos int;
+   resarr text[2] = '{"",""}';
+   idxl int;
+   idxn int;
  BEGIN
+  -- index for inserting name and localized name
+  IF localized_name_second THEN
+    idxl = 2;
+    idxn = 1;
+  ELSE
+    idxl = 1;
+    idxn = 2;
+  END IF;
   -- Usually we want to show name and local name.
   -- However in some cases when name avtually contains two name we unse a matching name:XX tag
   name = 'name';
   IF NOT tags ? name THEN
     IF is_street THEN
       langcode=substring(local_name from position(':' in local_name)+1 for char_length(local_name));
-      return(osml10n_street_abbrev(tags->local_name,langcode));
+        resarr[idxl]=osml10n_street_abbrev(tags->local_name,langcode);
     ELSE
-      return(tags->local_name);
+        resarr[idxl]=tags->local_name;
     END IF;
+    return(resarr);
   END IF;
   nobrackets=false;
   /* Now we need to do some heuristic to check if the generation of a
@@ -92,10 +122,11 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
       IF (char_length(unacc_local) = char_length(unacc)) THEN
         IF is_street THEN
           langcode=substring(local_name from position(':' in local_name)+1 for char_length(local_name));
-          return(osml10n_street_abbrev(tags->name,langcode));
+          resarr[idxn] = osml10n_street_abbrev(tags->name,langcode);
         ELSE
-          return(tags->name);
+          resarr[idxn] = tags->name;
         END IF;
+        return(resarr);
       END IF;
       IF tags IS NULL THEN
         nobrackets=true;
@@ -124,7 +155,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
                      mappers usually use the convention of putting the more
                      important language first in bilingual generic name tag.
                      
-                     So just remove the "loc_in_brackets = false" assignment
+                     So just remove the idxl and idxn assignments below
                      if you want to get rid of this fuzzy behaviour!
                      
                      Probably it might be a good idea to add an additional
@@ -133,7 +164,8 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
                   if (pos = 1) THEN
                     IF regexp_matches(substring(unacc,length(unacc_local)+1,1),'[\s\(\)\-,;:/\[\]]') IS NOT NULL THEN
                       raise notice 'swapping primary/second name';
-                      loc_in_brackets = false;
+                      idxl = 1;
+                      idxn = 2;
                     END IF;
                   END IF;
                   name = tag;
@@ -154,10 +186,11 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
         IF not found THEN
           IF is_street THEN
             langcode=substring(local_name from position(':' in local_name)+1 for char_length(local_name));
-            return(osml10n_street_abbrev(tags->local_name,langcode));
+            resarr[idxnl] = osml10n_street_abbrev(tags->local_name,langcode);
           ELSE
-            return(tags->local_name);
+            resarr[idxnl] = tags->local_name;
           END IF;
+            return(resarr);
         END IF;
       END IF;
     END IF;
@@ -166,10 +199,11 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
   -- raise notice 'nobrackets: %',nobrackets;
   IF nobrackets THEN
     IF is_street THEN
-      return(osml10n_street_abbrev_all(tags->name));
+      resarr[idxnn] = osml10n_street_abbrev_all(tags->name);
     ELSE
-      return(tags->name);
+      resarr[idxnn] = tags->name;
     END IF;
+    return(resarr);
   ELSE
    IF is_street THEN
      IF (position(':' in local_name) >0) THEN
@@ -194,21 +228,10 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
      n=tags->name;
      ln=tags->local_name;
    END IF;
-   IF ( loc_in_brackets ) THEN
-     -- explicitely mark the whole string as LTR
-     IF ( show_brackets ) THEN
-       return chr(8234)||n||separator||'('||ln||')'||chr(8236);
-     ELSE
-       return chr(8234)||n||separator||ln||chr(8236);
-     END IF;
-   ELSE
-     -- explicitely mark the whole string as LTR
-     IF ( show_brackets ) THEN
-       return chr(8234)||ln||separator||'('||n||')'||chr(8236);
-    ELSE
-       return chr(8234)||ln||separator||n||chr(8236);
-    END IF;
-   END IF;
+
+   resarr[idxl] = ln;
+   resarr[idxn] = n;
+   return(resarr);   
   END IF;
  END;
 $combined$ LANGUAGE 'plpgsql' IMMUTABLE;
@@ -231,40 +254,42 @@ This scheme is used in functions:
 osml10n_get_name_from_tags and osml10n_get_name_without_brackets_from_tags
 
 */
-CREATE or REPLACE FUNCTION osml10n_get_name_from_tags(tags hstore, 
-                                                      loc_in_brackets boolean,
+CREATE or REPLACE FUNCTION osml10n_get_names_from_tags(tags hstore, 
+                                                      localized_name_second boolean,
                                                       is_street boolean DEFAULT false,
-                                                      show_brackets boolean DEFAULT false,
-                                                      separator text DEFAULT chr(10),
                                                       targetlang text DEFAULT 'de',
-                                                      place geometry DEFAULT NULL) RETURNS TEXT AS $$
+                                                      place geometry DEFAULT NULL) RETURNS TEXT[2] AS $$
  DECLARE
   -- 5 most commonly spoken languages using latin script (hopefully)   
   latin_langs text[] := '{"en","fr","es","pt","de"}';
   target_tag text;
   lang text;
   tag text;
+  resarr text[2] = '{"",""}';
  BEGIN
    target_tag := 'name:' || targetlang;
    IF tags ? target_tag THEN
-     return osml10n_gen_combined_name(target_tag,'name',tags,loc_in_brackets,show_brackets,separator,is_street,true);
+     return osml10n_gen_combined_names(target_tag,tags,localized_name_second,is_street,true);
    END IF;
+   -- at this stage we have no name tagged in target language, but name might be in
+   -- latin script or even in our target language, so, just use it
    IF tags ? 'name' THEN
      if (tags->'name' = '') THEN
-       return '';
+       return resarr;
      END IF;
      IF osml10n_is_latin(tags->'name') THEN
        IF is_street THEN
-         return(osml10n_street_abbrev_all(tags->'name'));
+         resarr[1] = osml10n_street_abbrev_all(tags->'name');
        ELSE
-         return tags->'name';
+         resarr[1] = tags->'name';
        END IF;
+       return resarr;
      END IF;
      -- at this stage name is not latin so we need to have a look at alternatives
      -- these are currently int_name, common latin scripts and romanized version of the name
      IF tags ? 'int_name' THEN
        if osml10n_is_latin(tags->'int_name') THEN
-         return osml10n_gen_combined_name('int_name','name',tags,loc_in_brackets,show_brackets,separator,is_street,false,true);
+         return osml10n_gen_combined_names('int_name',tags,localized_name_second,is_street,false,true);
        END IF;
      END IF;
      
@@ -278,7 +303,7 @@ CREATE or REPLACE FUNCTION osml10n_get_name_from_tags(tags hstore,
        target_tag := 'name:' || lang;
        if tags ? target_tag THEN
          -- raise notice 'found roman language tag %', target_tag;
-         return osml10n_gen_combined_name(target_tag,'name',tags,loc_in_brackets,show_brackets,separator,is_street,true,true);
+         return osml10n_gen_combined_names(target_tag,tags,localized_name_second,is_street,true,true);
        END IF;
      END LOOP;
      -- try to find a romanized version of the name
@@ -289,7 +314,7 @@ CREATE or REPLACE FUNCTION osml10n_get_name_from_tags(tags hstore,
      LOOP
        IF ((tag ~ '^name:.+_rm$') or (tag ~ '^name:.+-Latn$')) THEN
          -- raise notice 'found romanization name tag %', tag;
-         return osml10n_gen_combined_name(tag,'name',tags,loc_in_brackets,show_brackets,separator,is_street,true,true);
+         return osml10n_gen_combined_names(tag,tags,localized_name_second,is_street,true,true);
        END IF;
      END LOOP;
      IF is_street THEN
@@ -297,9 +322,9 @@ CREATE or REPLACE FUNCTION osml10n_get_name_from_tags(tags hstore,
      ELSE
        tags := tags || hstore('name:Latn',osml10n_geo_translit(tags->'name',place));
      END IF;
-     return osml10n_gen_combined_name('name:Latn','name',tags,loc_in_brackets,show_brackets,separator,is_street,false,true);
+     return osml10n_gen_combined_names('name:Latn',tags,localized_name_second,is_street,false,true);
    ELSE
-     return NULL;
+     return '{"",""}';
    END IF;
  END;
 $$ LANGUAGE 'plpgsql' STABLE;
@@ -375,35 +400,42 @@ $$ LANGUAGE 'plpgsql' STABLE;
 
 */
 CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore, 
-                                                           loc_in_brackets boolean,
+                                                           localized_name_second boolean,
                                                            show_brackets boolean DEFAULT false,
                                                            separator text DEFAULT chr(10),
                                                            targetlang text DEFAULT 'de',
                                                            place geometry DEFAULT NULL,
                                                            name text DEFAULT NULL) RETURNS TEXT AS $$
+ DECLARE
+   names text[2];
  BEGIN
    -- workaround for openstreetmap carto database layout where name uses its own database column
    IF (name IS NOT NULL) THEN
      tags := tags || hstore('name',name);
    END IF;
+   names = osml10n_get_names_from_tags(tags,localized_name_second,false,targetlang,place);
 
-   return(osml10n_get_name_from_tags(tags,loc_in_brackets,false,show_brackets,separator,targetlang,place));
+   return(osml10n_format_combined_name(names,show_brackets,separator));
  END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
 
 CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore, 
-                                                           loc_in_brackets boolean,
+                                                           localized_name_second boolean,
                                                            show_brackets boolean DEFAULT false,
                                                            separator text DEFAULT ' - ',
                                                            targetlang text DEFAULT 'de',
                                                            place geometry DEFAULT NULL,
                                                            name text DEFAULT NULL) RETURNS TEXT AS $$
+ DECLARE
+   names text[2];
  BEGIN
    -- workaround for openstreetmap carto database layout where name uses its own database column
    IF (name IS NOT NULL) THEN
      tags := tags || hstore('name',name);
    END IF;
-   return(osml10n_get_name_from_tags(tags,loc_in_brackets,true,show_brackets,separator,targetlang,place));
+   names = osml10n_get_names_from_tags(tags,localized_name_second,true,targetlang,place);
+   
+   return(osml10n_format_combined_name(names,show_brackets,separator));
  END;
 $$ LANGUAGE 'plpgsql' STABLE;
