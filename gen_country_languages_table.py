@@ -25,7 +25,7 @@ for line in content.splitlines():
       if col == 1:
         country['name']=line
       if col == 3:
-        country['langs']=line
+        country['langs']=line.replace(", ",",")
       # check for propper table alignment (<tr><td>)
       if col == 0:
         if '<tr>' not in oldline:

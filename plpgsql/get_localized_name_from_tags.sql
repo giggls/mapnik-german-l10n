@@ -48,9 +48,9 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
   IF NOT tags ? name THEN
     IF is_street THEN
       langcode=substring(local_name from position(':' in local_name)+1 for char_length(local_name));
-      return(osml10n_street_abbrev(tags->name,langcode));
+      return(osml10n_street_abbrev(tags->local_name,langcode));
     ELSE
-      return(tags->name);
+      return(tags->local_name);
     END IF;
   END IF;
   nobrackets=false;
