@@ -17,10 +17,10 @@ Licence AGPL http://www.gnu.org/licenses/agpl-3.0.de.html
    from a name:xx tag using the requested separator instad of name
    using a somewhat heuristic algorithm (see below)
    
+   name and local_name must contain the desired tag not the actual name string itself
    
 */       
 CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
-                                                     name text,
                                                      tags hstore,
                                                      loc_in_brackets boolean,
                                                      show_brackets boolean DEFAULT true,
@@ -32,6 +32,7 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
    nobrackets boolean;
    found boolean;
    regex text;
+   name text;
    unacc text;
    unacc_local text;
    unacc_tag text;
@@ -41,7 +42,10 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_name(local_name text,
    ln text;
    pos int;
  BEGIN
-  IF NOT tags ? 'name' THEN
+  -- Usually we want to show name and local name.
+  -- However in some cases when name avtually contains two name we unse a matching name:XX tag
+  name = 'name';
+  IF NOT tags ? name THEN
     IF is_street THEN
       langcode=substring(local_name from position(':' in local_name)+1 for char_length(local_name));
       return(osml10n_street_abbrev(tags->name,langcode));
