@@ -65,3 +65,23 @@ CREATE or REPLACE FUNCTION osml10n_contains_cyrillic(text) RETURNS BOOLEAN AS $$
     RETURN false;
   END;
 $$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
+
+/*
+   helper function "osml10n_contains_thai"
+  checks if string contains Thai language characters
+  = 0x0E00-0x0E7F in unicode table
+*/
+CREATE or REPLACE FUNCTION osml10n_contains_thai(text) RETURNS BOOLEAN AS $$
+  DECLARE
+    i integer;
+    c integer;
+  BEGIN
+    FOR i IN 1..char_length($1) LOOP
+      c = ascii(substr($1, i, 1));
+      IF ((c > x'0E00'::int) AND (c < x'0E7F'::int)) THEN
+        RETURN true;
+      END IF;
+    END LOOP;
+    RETURN false;
+  END;
+$$ LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;

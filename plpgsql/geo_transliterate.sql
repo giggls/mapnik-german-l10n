@@ -50,19 +50,30 @@ $$ LANGUAGE plpgsql STABLE;
 
 
 CREATE or REPLACE FUNCTION osml10n_geo_translit(name text, place geometry DEFAULT NULL) RETURNS TEXT AS $$
-  DECLARE
-    country text;
   BEGIN
     -- RAISE LOG 'going to transliterate %', name;
     IF (place IS NULL) THEN
-      return osml10n_cc_transscript(name,'aq');
+      return osml10n_translit(name);
     ELSE
+    
+    
       /* 
          Look up the country where the geometry is located
-      */
-      country=osml10n_get_country(place);
+         
+         This is likely slow and currently only needed for CJK
+         and Thai language thus check for those alphabets first.
       
-      return(osml10n_cc_transscript(name,country));
+      */
+      
+      IF (osml10n_contains_thai(name)) THEN
+        return osml10n_cc_transscript(name,'th');
+      END IF;
+
+      IF (osml10n_contains_cjk(name)) THEN
+        return osml10n_cc_transscript(name,osml10n_get_country(place));
+      END IF;
+
+      return(osml10n_translit(name));
 
     END IF;
   END;
