@@ -186,9 +186,9 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_names(local_name text,
         IF not found THEN
           IF is_street THEN
             langcode=substring(local_name from position(':' in local_name)+1 for char_length(local_name));
-            resarr[idxnl] = osml10n_street_abbrev(tags->local_name,langcode);
+            resarr[idxl] = osml10n_street_abbrev(tags->local_name,langcode);
           ELSE
-            resarr[idxnl] = tags->local_name;
+            resarr[idxl] = tags->local_name;
           END IF;
             return(resarr);
         END IF;
@@ -199,9 +199,9 @@ CREATE or REPLACE FUNCTION osml10n_gen_combined_names(local_name text,
   -- raise notice 'nobrackets: %',nobrackets;
   IF nobrackets THEN
     IF is_street THEN
-      resarr[idxnn] = osml10n_street_abbrev_all(tags->name);
+      resarr[idxn] = osml10n_street_abbrev_all(tags->name);
     ELSE
-      resarr[idxnn] = tags->name;
+      resarr[idxn] = tags->name;
     END IF;
     return(resarr);
   ELSE
