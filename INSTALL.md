@@ -40,7 +40,7 @@ I would be happy if somebody would contribute a spec-file for rpm based
 distributions.
 
 The build process will need to download country_osm_grid.sql from
-http://www.nominatim.org/data/country_grid.sql.gz
+https://www.nominatim.org/data/country_grid.sql.gz
 If your computer is offline for some reason. Just download this file and
 put it inside your build directory.
 
@@ -102,4 +102,3 @@ yourdb=# select osml10n_thai_transcript('ถนนข้าวสาร');
 To check if everything went well run the test script provided in the
 tests/runtests_in_virtualenv.sh directory. As this test uses pg_virtualenv
 it is not required to create a database to run the test.
-

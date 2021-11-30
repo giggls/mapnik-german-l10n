@@ -7,7 +7,7 @@ determine which country the centroid of a geometry object is located
 a table called country_osm_grid is required to make this work
 
 It can be downloaded from nominatim git at:
-http://www.nominatim.org/data/country_grid.sql.gz
+https://www.nominatim.org/data/country_grid.sql.gz
 
 (c) 2015-2016 Sven Geggus <svn-osm@geggus.net>
 
