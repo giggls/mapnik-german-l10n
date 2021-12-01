@@ -21,9 +21,3 @@ gencontrol:
 override_dh_auto_configure: gencontrol
 	dh_auto_configure
 
-override_dh_clean:
-	dh_clean
-
-override_dh_auto_build:
-	dh_auto_build
-

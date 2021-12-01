@@ -10,16 +10,16 @@ SUBDIRS = kanjitranscript icutranslit
 CLEANDIRS = $(SUBDIRS:%=clean-%)
 INSTALLDIRS = $(SUBDIRS:%=install-%)
 
-all: $(patsubst %.md,%.html,$(wildcard *.md)) INSTALL README Makefile $(SUBDIRS) osml10n.control osml10n_thai_transcript.control country_languages.data  osml10n_country_osm_grid.data
+all: $(patsubst %.md,%.html,$(wildcard *.md)) INSTALL README Makefile $(SUBDIRS) osml10n.control osml10n_thai_transcript.control country_languages.data
 
 INSTALL: INSTALL.md
-	pandoc --from markdown_github --to plain --standalone $< --output $@
+	pandoc --from gfm --to plain --standalone $< --output $@
 
 README: README.md
-	pandoc --from markdown_github --to plain --standalone $< --output $@
+	pandoc --from gfm --to plain --standalone $< --output $@
 
 %.html: %.md
-	pandoc --from markdown_github --to html --standalone $< --output $@
+	pandoc --from gfm --to html --standalone $< --output $@
 
 .PHONY:	subdirs $(SUBDIRS)
       
@@ -50,8 +50,8 @@ clean: $(CLEANDIRS)
 	
 # remove everything including the files from the interwebs
 mrproper: clean
-	rm country_osm_grid.sql
-	rm country_languages.data
+	rm -f country_osm_grid.sql
+	rm -f country_languages.data
 	
 $(CLEANDIRS):
 	$(MAKE) -C $(@:clean-%=%) clean

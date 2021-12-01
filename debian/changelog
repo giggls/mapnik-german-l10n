@@ -1,3 +1,9 @@
+osml10n (2.5.10) unstable; urgency=medium
+
+  * Make this build on Debian 11
+
+ -- Sven Geggus <sven-debian@geggus.net>  Wed, 01 Dec 2021 16:07:45 +0100
+
 osml10n (2.5.9) unstable; urgency=medium
 
   * Reduce number of regular expressions used to fix performance problem
