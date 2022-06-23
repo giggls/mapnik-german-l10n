@@ -1,3 +1,7 @@
+# :warning: Deprecation :warning:
+
+This project is replaced by https://github.com/giggls/osml10n
+
 #  OSM map l10n functions ![CI](https://github.com/giggls/mapnik-german-l10n/workflows/CI/badge.svg)
 ## (from german mapnik style)
 
