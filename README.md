@@ -1,7 +1,9 @@
-#  OSM map l10n functions ![CI](https://github.com/giggls/mapnik-german-l10n/workflows/CI/badge.svg)
-## (from german mapnik style)
+#  OSM map l10n functions
+## (from German Mapnik style)
 
-All l10n functions from german mapnik style are implemented as PL/pgSQL stored procedures
+## ![This Repository is deprecated in favor of https://github.com/giggls/osml10n/](https://github.com/giggls/osml10n/)
+
+All l10n functions from German Mapnik style are implemented as PL/pgSQL stored procedures
 and are therefore usable in a renderer independent way.
 
 For this reason they are now hosted in their own repository.
